@@ -30,6 +30,14 @@
 
 Όλα τα αποτελέσματα εξάγονται σε **PDF πλήρους μελέτης**, στα Ελληνικά ή στα Αγγλικά.
 
+## Κίνητρο
+
+Η εφαρμογή αναπτύχθηκε ως **διπλωματική εργασία** με τίτλο «Ανάπτυξη μοντέλου 7D-BIM και ανάλυση κύκλου ζωής κτιριακού έργου».
+Στόχος είναι να δείξει πώς ένα μοντέλο BIM μπορεί να συνοδεύει ένα κτίριο σε όλη του τη ζωή —από τη μελέτη και την κατασκευή
+ως τη χρήση, τη συντήρηση και την αντιμετώπιση κινδύνων— και να δίνει στον ιδιοκτήτη, στον διαχειριστή ή στον δημόσιο φορέα
+τεκμηριωμένες απαντήσεις για κόστος, ενέργεια και ασφάλεια. Ως έργο εφαρμογής χρησιμοποιήθηκε πραγματική πολυκατοικία κατοικιών στη Νέα Κηφισιά,
+με τα σχέδια της οικοδομικής άδειας, τη στατική μελέτη και το τρισδιάστατο μοντέλο της.
+
 ## Οι «διαστάσεις» του BIM
 
 | Διάσταση | Τι σημαίνει | Τι κάνει η εφαρμογή |
@@ -134,6 +142,24 @@ Copyright © 2026 Οδυσσέας Μπαρούτης.
 Μπορείτε να το χρησιμοποιήσετε, να το μελετήσετε, να το τροποποιήσετε και να το διανείμετε,
 με την προϋπόθεση ότι κάθε παράγωγο έργο διατίθεται επίσης ανοιχτό με την ίδια άδεια.
 Οι άδειες των βιβλιοθηκών τρίτων αναφέρονται στο [`THIRD_PARTY.md`](THIRD_PARTY.md).
+
+```
+7D-BIM Lifecycle Tool
+Copyright (C) 2026 Odysseas Baroutis
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>.
+```
 
 Τα δεδομένα του έργου της Κηφισιάς (στοιχεία από τα σχέδια, τη στατική μελέτη και τον πίνακα ποσοστών) δημοσιεύονται με την έγκριση
 του τεχνικού γραφείου, ως παράδειγμα εφαρμογής της διπλωματικής εργασίας. Δεν περιλαμβάνονται προσωπικά δεδομένα (ονόματα ιδιοκτητών).
