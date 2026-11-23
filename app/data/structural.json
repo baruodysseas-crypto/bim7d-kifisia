@@ -1,0 +1,1136 @@
+{
+ "design": {
+  "program": "Statics 2023",
+  "zone": "II",
+  "a_g": 0.24,
+  "gamma_I": 1.0,
+  "q": 3.0,
+  "soil": "B",
+  "T1": 0.15,
+  "T2": 0.6,
+  "theta": 1.0,
+  "Tx": 0.4,
+  "Ty": 0.4,
+  "Rd_x": 1.96,
+  "Rd_y": 1.96,
+  "concrete": "C25/30",
+  "steel": "B500C",
+  "E_concrete_GPa": 30.5,
+  "psi2_residential": 0.3
+ },
+ "storeys": [
+  {
+   "idx": 2,
+   "dh_m": 3.0,
+   "q": 3.0,
+   "drift_x_mm": 0.45,
+   "drift_y_mm": 0.2,
+   "Vx_kN": 3270.0,
+   "Vy_kN": 3270.0,
+   "W_kN": 16349.0,
+   "theta_x": 0.002,
+   "theta_y": 0.001
+  },
+  {
+   "idx": 3,
+   "dh_m": 3.05,
+   "q": 3.0,
+   "drift_x_mm": 4.34,
+   "drift_y_mm": 2.8,
+   "Vx_kN": 3052.0,
+   "Vy_kN": 3052.0,
+   "W_kN": 10991.0,
+   "theta_x": 0.015,
+   "theta_y": 0.01
+  },
+  {
+   "idx": 4,
+   "dh_m": 3.05,
+   "q": 3.0,
+   "drift_x_mm": 5.9,
+   "drift_y_mm": 4.25,
+   "Vx_kN": 2379.0,
+   "Vy_kN": 2379.0,
+   "W_kN": 6909.0,
+   "theta_x": 0.017,
+   "theta_y": 0.012
+  },
+  {
+   "idx": 5,
+   "dh_m": 3.2,
+   "q": 3.0,
+   "drift_x_mm": 5.38,
+   "drift_y_mm": 4.55,
+   "Vx_kN": 1207.0,
+   "Vy_kN": 1207.0,
+   "W_kN": 2852.0,
+   "theta_x": 0.012,
+   "theta_y": 0.01
+  },
+  {
+   "idx": 6,
+   "dh_m": 1.2,
+   "q": 3.0,
+   "drift_x_mm": 0.84,
+   "drift_y_mm": 1.49,
+   "Vx_kN": 115.0,
+   "Vy_kN": 115.0,
+   "W_kN": 246.0,
+   "theta_x": 0.004,
+   "theta_y": 0.008
+  }
+ ],
+ "walls": [
+  {
+   "idx": 3,
+   "Vt_x": 2218.0,
+   "Vo_x": 3052.0,
+   "nv_x": 0.727,
+   "Vt_y": 1876.0,
+   "Vo_y": 3052.0,
+   "nv_y": 0.615
+  },
+  {
+   "idx": 4,
+   "Vt_x": 1572.0,
+   "Vo_x": 2379.0,
+   "nv_x": 0.661,
+   "Vt_y": 1876.0,
+   "Vo_y": 2379.0,
+   "nv_y": 0.789
+  },
+  {
+   "idx": 5,
+   "Vt_x": 517.0,
+   "Vo_x": 1207.0,
+   "nv_x": 0.429,
+   "Vt_y": 854.0,
+   "Vo_y": 1207.0,
+   "nv_y": 0.707
+  },
+  {
+   "idx": 6,
+   "Vt_x": 298.0,
+   "Vo_x": 115.0,
+   "nv_x": 0.99,
+   "Vt_y": 193.0,
+   "Vo_y": 115.0,
+   "nv_y": 0.99
+  }
+ ],
+ "quantities": [
+  {
+   "idx": 1,
+   "beams_fe_t": 8.75,
+   "beams_concrete_m3": 59.1,
+   "slabs_fe_t": 12.6,
+   "slabs_concrete_m3": 192.2,
+   "columns_fe_t": 0.0,
+   "columns_concrete_m3": 0.0,
+   "footings_fe_t": 0.0,
+   "footings_concrete_m3": 0.0,
+   "area_m2": 293.0,
+   "formwork_m2": -0.0,
+   "fe_t": 21.34,
+   "concrete_m3": 251.3
+  },
+  {
+   "idx": 2,
+   "beams_fe_t": 6.27,
+   "beams_concrete_m3": 69.8,
+   "slabs_fe_t": 2.94,
+   "slabs_concrete_m3": 48.3,
+   "columns_fe_t": 6.41,
+   "columns_concrete_m3": 27.0,
+   "footings_fe_t": 0.0,
+   "footings_concrete_m3": 0.0,
+   "area_m2": 313.0,
+   "formwork_m2": 1055.0,
+   "fe_t": 15.61,
+   "concrete_m3": 145.0
+  },
+  {
+   "idx": 3,
+   "beams_fe_t": 2.13,
+   "beams_concrete_m3": 12.2,
+   "slabs_fe_t": 3.37,
+   "slabs_concrete_m3": 51.5,
+   "columns_fe_t": 5.23,
+   "columns_concrete_m3": 23.8,
+   "footings_fe_t": 0.0,
+   "footings_concrete_m3": 0.0,
+   "area_m2": 306.0,
+   "formwork_m2": 609.0,
+   "fe_t": 10.74,
+   "concrete_m3": 87.5
+  },
+  {
+   "idx": 4,
+   "beams_fe_t": 2.18,
+   "beams_concrete_m3": 10.3,
+   "slabs_fe_t": 2.78,
+   "slabs_concrete_m3": 55.8,
+   "columns_fe_t": 3.74,
+   "columns_concrete_m3": 16.6,
+   "footings_fe_t": 0.0,
+   "footings_concrete_m3": 0.0,
+   "area_m2": 285.0,
+   "formwork_m2": 493.0,
+   "fe_t": 8.69,
+   "concrete_m3": 82.7
+  },
+  {
+   "idx": 5,
+   "beams_fe_t": 1.84,
+   "beams_concrete_m3": 9.8,
+   "slabs_fe_t": 3.07,
+   "slabs_concrete_m3": 37.6,
+   "columns_fe_t": 3.46,
+   "columns_concrete_m3": 19.0,
+   "footings_fe_t": 0.0,
+   "footings_concrete_m3": 0.0,
+   "area_m2": 219.0,
+   "formwork_m2": 460.0,
+   "fe_t": 8.37,
+   "concrete_m3": 66.3
+  },
+  {
+   "idx": 6,
+   "beams_fe_t": 0.37,
+   "beams_concrete_m3": 2.8,
+   "slabs_fe_t": 0.11,
+   "slabs_concrete_m3": 3.1,
+   "columns_fe_t": 0.83,
+   "columns_concrete_m3": 4.6,
+   "footings_fe_t": 0.0,
+   "footings_concrete_m3": 0.0,
+   "area_m2": 18.0,
+   "formwork_m2": 86.0,
+   "fe_t": 1.31,
+   "concrete_m3": 10.6
+  }
+ ],
+ "members": [
+  {
+   "member": 1,
+   "order": 1,
+   "H_m": 3.0,
+   "rects": [
+    "25/50",
+    "50/25"
+   ],
+   "u_flex_seismic": 0.42,
+   "u_flex_gravity": 0.0,
+   "u_shear": 0.173,
+   "As_tot_cm2": 20.4,
+   "N_G_kN": 46.0,
+   "N_Q_kN": 13.0
+  },
+  {
+   "member": 2,
+   "order": 1,
+   "H_m": 3.0,
+   "rects": [
+    "50/25",
+    "25/50"
+   ],
+   "u_flex_seismic": 0.27,
+   "u_flex_gravity": 0.0,
+   "u_shear": 0.106,
+   "As_tot_cm2": 20.4,
+   "N_G_kN": 41.0,
+   "N_Q_kN": 7.0
+  },
+  {
+   "member": 3,
+   "order": 1,
+   "H_m": 3.0,
+   "rects": [
+    "50/25",
+    "25/50"
+   ],
+   "u_flex_seismic": 0.24,
+   "u_flex_gravity": 0.0,
+   "u_shear": 0.103,
+   "As_tot_cm2": 20.4,
+   "N_G_kN": 31.0,
+   "N_Q_kN": 5.0
+  },
+  {
+   "member": 4,
+   "order": 1,
+   "H_m": 3.0,
+   "rects": [
+    "25/50",
+    "50/25"
+   ],
+   "u_flex_seismic": 0.4,
+   "u_flex_gravity": 0.0,
+   "u_shear": 0.167,
+   "As_tot_cm2": 20.4,
+   "N_G_kN": 56.0,
+   "N_Q_kN": 16.0
+  },
+  {
+   "member": 5,
+   "order": 1,
+   "H_m": 3.0,
+   "rects": [
+    "55/25",
+    "25/70"
+   ],
+   "u_flex_seismic": 0.36,
+   "u_flex_gravity": 0.08,
+   "u_shear": 0.272,
+   "As_tot_cm2": 30.5,
+   "N_G_kN": 271.5,
+   "N_Q_kN": 84.0
+  },
+  {
+   "member": 6,
+   "order": 1,
+   "H_m": 3.0,
+   "rects": [
+    "50/25"
+   ],
+   "u_flex_seismic": 0.16,
+   "u_flex_gravity": 0.25,
+   "u_shear": 0.056,
+   "As_tot_cm2": 15.3,
+   "N_G_kN": 79.5,
+   "N_Q_kN": 19.0
+  },
+  {
+   "member": 7,
+   "order": 1,
+   "H_m": 3.0,
+   "rects": [
+    "25/35"
+   ],
+   "u_flex_seismic": 0.06,
+   "u_flex_gravity": 0.0,
+   "u_shear": 0.026,
+   "As_tot_cm2": 15.3,
+   "N_G_kN": 61.0,
+   "N_Q_kN": 12.0
+  },
+  {
+   "member": 8,
+   "order": 1,
+   "H_m": 3.0,
+   "rects": [
+    "50/25"
+   ],
+   "u_flex_seismic": 0.22,
+   "u_flex_gravity": 0.27,
+   "u_shear": 0.059,
+   "As_tot_cm2": 15.3,
+   "N_G_kN": 78.0,
+   "N_Q_kN": 19.0
+  },
+  {
+   "member": 9,
+   "order": 1,
+   "H_m": 3.0,
+   "rects": [
+    "25/35"
+   ],
+   "u_flex_seismic": 0.06,
+   "u_flex_gravity": 0.0,
+   "u_shear": 0.03,
+   "As_tot_cm2": 15.3,
+   "N_G_kN": 65.0,
+   "N_Q_kN": 13.0
+  },
+  {
+   "member": 10,
+   "order": 1,
+   "H_m": 3.0,
+   "rects": [
+    "25/70",
+    "55/25",
+    "25/50",
+    "25/50",
+    "25/50",
+    "25/50",
+    "55/25",
+    "85/25",
+    "55/25"
+   ],
+   "u_flex_seismic": 1.01,
+   "u_flex_gravity": 0.07,
+   "u_shear": 0.676,
+   "As_tot_cm2": 30.5,
+   "N_G_kN": 273.5,
+   "N_Q_kN": 85.0
+  },
+  {
+   "member": 17,
+   "order": 1,
+   "H_m": 3.0,
+   "rects": [
+    "55/25",
+    "25/65"
+   ],
+   "u_flex_seismic": 0.71,
+   "u_flex_gravity": 0.19,
+   "u_shear": 0.34,
+   "As_tot_cm2": 30.5,
+   "N_G_kN": 433.5,
+   "N_Q_kN": 155.0
+  },
+  {
+   "member": 18,
+   "order": 1,
+   "H_m": 3.0,
+   "rects": [
+    "25/70"
+   ],
+   "u_flex_seismic": 0.17,
+   "u_flex_gravity": 0.44,
+   "u_shear": 0.083,
+   "As_tot_cm2": 45.6,
+   "N_G_kN": 994.5,
+   "N_Q_kN": 347.0
+  },
+  {
+   "member": 19,
+   "order": 1,
+   "H_m": 3.0,
+   "rects": [
+    "25/70"
+   ],
+   "u_flex_seismic": 0.18,
+   "u_flex_gravity": 0.46,
+   "u_shear": 0.087,
+   "As_tot_cm2": 60.8,
+   "N_G_kN": 1041.5,
+   "N_Q_kN": 364.0
+  },
+  {
+   "member": 20,
+   "order": 1,
+   "H_m": 3.0,
+   "rects": [
+    "55/25",
+    "25/65"
+   ],
+   "u_flex_seismic": 0.55,
+   "u_flex_gravity": 0.14,
+   "u_shear": 0.288,
+   "As_tot_cm2": 30.5,
+   "N_G_kN": 1080.0,
+   "N_Q_kN": 381.0
+  },
+  {
+   "member": 21,
+   "order": 1,
+   "H_m": 3.0,
+   "rects": [
+    "80/25"
+   ],
+   "u_flex_seismic": 0.05,
+   "u_flex_gravity": 0.0,
+   "u_shear": 0.038,
+   "As_tot_cm2": 25.4,
+   "N_G_kN": 118.5,
+   "N_Q_kN": 15.0
+  },
+  {
+   "member": 22,
+   "order": 1,
+   "H_m": 3.0,
+   "rects": [
+    "80/25"
+   ],
+   "u_flex_seismic": 0.2,
+   "u_flex_gravity": 0.44,
+   "u_shear": 0.061,
+   "As_tot_cm2": 25.4,
+   "N_G_kN": 125.5,
+   "N_Q_kN": 26.0
+  },
+  {
+   "member": 23,
+   "order": 1,
+   "H_m": 3.0,
+   "rects": [
+    "80/25"
+   ],
+   "u_flex_seismic": 0.2,
+   "u_flex_gravity": 0.43,
+   "u_shear": 0.063,
+   "As_tot_cm2": 25.4,
+   "N_G_kN": 129.5,
+   "N_Q_kN": 27.0
+  },
+  {
+   "member": 24,
+   "order": 1,
+   "H_m": 3.0,
+   "rects": [
+    "80/25"
+   ],
+   "u_flex_seismic": 0.05,
+   "u_flex_gravity": 0.0,
+   "u_shear": 0.042,
+   "As_tot_cm2": 25.4,
+   "N_G_kN": 109.5,
+   "N_Q_kN": 11.0
+  },
+  {
+   "member": 25,
+   "order": 1,
+   "H_m": 3.0,
+   "rects": [
+    "25/25"
+   ],
+   "u_flex_seismic": 0.02,
+   "u_flex_gravity": 0.0,
+   "u_shear": 0.006,
+   "As_tot_cm2": 10.2,
+   "N_G_kN": 4.0,
+   "N_Q_kN": 0.0
+  },
+  {
+   "member": 26,
+   "order": 1,
+   "H_m": 3.0,
+   "rects": [
+    "25/25"
+   ],
+   "u_flex_seismic": 0.02,
+   "u_flex_gravity": 0.0,
+   "u_shear": 0.006,
+   "As_tot_cm2": 10.2,
+   "N_G_kN": 4.5,
+   "N_Q_kN": 0.0
+  },
+  {
+   "member": 27,
+   "order": 1,
+   "H_m": 3.0,
+   "rects": [
+    "25/25"
+   ],
+   "u_flex_seismic": 0.02,
+   "u_flex_gravity": 0.0,
+   "u_shear": 0.006,
+   "As_tot_cm2": 10.2,
+   "N_G_kN": 4.5,
+   "N_Q_kN": 0.0
+  },
+  {
+   "member": 28,
+   "order": 1,
+   "H_m": 3.0,
+   "rects": [
+    "25/25"
+   ],
+   "u_flex_seismic": 0.02,
+   "u_flex_gravity": 0.0,
+   "u_shear": 0.006,
+   "As_tot_cm2": 10.2,
+   "N_G_kN": 6.0,
+   "N_Q_kN": 0.0
+  },
+  {
+   "member": 29,
+   "order": 1,
+   "H_m": 3.0,
+   "rects": [
+    "25/25"
+   ],
+   "u_flex_seismic": 0.05,
+   "u_flex_gravity": 0.0,
+   "u_shear": 0.013,
+   "As_tot_cm2": 10.2,
+   "N_G_kN": 2.5,
+   "N_Q_kN": 1.0
+  },
+  {
+   "member": 30,
+   "order": 1,
+   "H_m": 3.0,
+   "rects": [
+    "25/25"
+   ],
+   "u_flex_seismic": 0.04,
+   "u_flex_gravity": 0.0,
+   "u_shear": 0.013,
+   "As_tot_cm2": 10.2,
+   "N_G_kN": 3.5,
+   "N_Q_kN": 1.0
+  },
+  {
+   "member": 1,
+   "order": 2,
+   "H_m": 3.05,
+   "rects": [
+    "25/50",
+    "50/25"
+   ],
+   "u_flex_seismic": 0.74,
+   "u_flex_gravity": 0.0,
+   "u_shear": 0.465,
+   "As_tot_cm2": 20.4,
+   "N_G_kN": 99.0,
+   "N_Q_kN": 43.0
+  },
+  {
+   "member": 2,
+   "order": 2,
+   "H_m": 3.05,
+   "rects": [
+    "50/25",
+    "25/50"
+   ],
+   "u_flex_seismic": 0.6,
+   "u_flex_gravity": 0.14,
+   "u_shear": 0.328,
+   "As_tot_cm2": 20.4,
+   "N_G_kN": 58.0,
+   "N_Q_kN": 18.0
+  },
+  {
+   "member": 3,
+   "order": 2,
+   "H_m": 3.05,
+   "rects": [
+    "50/25",
+    "25/50"
+   ],
+   "u_flex_seismic": 0.49,
+   "u_flex_gravity": 0.0,
+   "u_shear": 0.317,
+   "As_tot_cm2": 20.4,
+   "N_G_kN": 56.0,
+   "N_Q_kN": 18.0
+  },
+  {
+   "member": 4,
+   "order": 2,
+   "H_m": 3.05,
+   "rects": [
+    "25/50",
+    "50/25"
+   ],
+   "u_flex_seismic": 0.85,
+   "u_flex_gravity": 0.0,
+   "u_shear": 0.473,
+   "As_tot_cm2": 20.4,
+   "N_G_kN": 101.0,
+   "N_Q_kN": 44.0
+  },
+  {
+   "member": 5,
+   "order": 2,
+   "H_m": 3.05,
+   "rects": [
+    "55/25",
+    "25/70"
+   ],
+   "u_flex_seismic": 0.64,
+   "u_flex_gravity": 0.21,
+   "u_shear": 0.427,
+   "As_tot_cm2": 30.5,
+   "N_G_kN": 564.5,
+   "N_Q_kN": 196.0
+  },
+  {
+   "member": 6,
+   "order": 2,
+   "H_m": 3.05,
+   "rects": [
+    "50/25"
+   ],
+   "u_flex_seismic": 0.47,
+   "u_flex_gravity": 0.31,
+   "u_shear": 0.173,
+   "As_tot_cm2": 15.3,
+   "N_G_kN": 264.0,
+   "N_Q_kN": 72.0
+  },
+  {
+   "member": 7,
+   "order": 2,
+   "H_m": 3.05,
+   "rects": [
+    "25/35"
+   ],
+   "u_flex_seismic": 0.4,
+   "u_flex_gravity": 0.06,
+   "u_shear": 0.276,
+   "As_tot_cm2": 15.3,
+   "N_G_kN": 194.0,
+   "N_Q_kN": 48.0
+  },
+  {
+   "member": 8,
+   "order": 2,
+   "H_m": 3.05,
+   "rects": [
+    "50/25"
+   ],
+   "u_flex_seismic": 0.42,
+   "u_flex_gravity": 0.27,
+   "u_shear": 0.17,
+   "As_tot_cm2": 15.3,
+   "N_G_kN": 257.0,
+   "N_Q_kN": 70.0
+  },
+  {
+   "member": 9,
+   "order": 2,
+   "H_m": 3.05,
+   "rects": [
+    "25/35"
+   ],
+   "u_flex_seismic": 0.41,
+   "u_flex_gravity": 0.07,
+   "u_shear": 0.276,
+   "As_tot_cm2": 15.3,
+   "N_G_kN": 191.5,
+   "N_Q_kN": 47.0
+  },
+  {
+   "member": 10,
+   "order": 2,
+   "H_m": 3.05,
+   "rects": [
+    "25/70",
+    "55/25",
+    "25/50",
+    "25/50",
+    "25/50",
+    "25/50",
+    "55/25",
+    "85/25",
+    "55/25"
+   ],
+   "u_flex_seismic": 0.94,
+   "u_flex_gravity": 0.25,
+   "u_shear": 0.948,
+   "As_tot_cm2": 47.1,
+   "N_G_kN": 569.0,
+   "N_Q_kN": 197.0
+  },
+  {
+   "member": 17,
+   "order": 2,
+   "H_m": 3.05,
+   "rects": [
+    "55/25",
+    "25/65"
+   ],
+   "u_flex_seismic": 0.95,
+   "u_flex_gravity": 0.39,
+   "u_shear": 0.304,
+   "As_tot_cm2": 45.6,
+   "N_G_kN": 1003.0,
+   "N_Q_kN": 386.0
+  },
+  {
+   "member": 18,
+   "order": 2,
+   "H_m": 3.05,
+   "rects": [
+    "25/70"
+   ],
+   "u_flex_seismic": 0.7,
+   "u_flex_gravity": 0.55,
+   "u_shear": 0.301,
+   "As_tot_cm2": 45.6,
+   "N_G_kN": 681.0,
+   "N_Q_kN": 240.0
+  },
+  {
+   "member": 19,
+   "order": 2,
+   "H_m": 3.05,
+   "rects": [
+    "25/70"
+   ],
+   "u_flex_seismic": 0.75,
+   "u_flex_gravity": 0.37,
+   "u_shear": 0.292,
+   "As_tot_cm2": 60.8,
+   "N_G_kN": 710.5,
+   "N_Q_kN": 252.0
+  },
+  {
+   "member": 20,
+   "order": 2,
+   "H_m": 3.05,
+   "rects": [
+    "55/25",
+    "25/65"
+   ],
+   "u_flex_seismic": 0.7,
+   "u_flex_gravity": 0.38,
+   "u_shear": 0.3,
+   "As_tot_cm2": 30.5,
+   "N_G_kN": 988.0,
+   "N_Q_kN": 382.0
+  },
+  {
+   "member": 1,
+   "order": 3,
+   "H_m": 3.05,
+   "rects": [
+    "55/25",
+    "25/70"
+   ],
+   "u_flex_seismic": 0.68,
+   "u_flex_gravity": 0.22,
+   "u_shear": 0.558,
+   "As_tot_cm2": 30.5,
+   "N_G_kN": 427.5,
+   "N_Q_kN": 152.0
+  },
+  {
+   "member": 2,
+   "order": 3,
+   "H_m": 3.05,
+   "rects": [
+    "50/25"
+   ],
+   "u_flex_seismic": 0.83,
+   "u_flex_gravity": 0.45,
+   "u_shear": 0.48,
+   "As_tot_cm2": 15.3,
+   "N_G_kN": 182.5,
+   "N_Q_kN": 57.0
+  },
+  {
+   "member": 3,
+   "order": 3,
+   "H_m": 3.05,
+   "rects": [
+    "25/35"
+   ],
+   "u_flex_seismic": 0.61,
+   "u_flex_gravity": 0.04,
+   "u_shear": 0.417,
+   "As_tot_cm2": 15.3,
+   "N_G_kN": 93.5,
+   "N_Q_kN": 22.0
+  },
+  {
+   "member": 4,
+   "order": 3,
+   "H_m": 3.05,
+   "rects": [
+    "50/25"
+   ],
+   "u_flex_seismic": 0.75,
+   "u_flex_gravity": 0.38,
+   "u_shear": 0.35,
+   "As_tot_cm2": 15.3,
+   "N_G_kN": 175.5,
+   "N_Q_kN": 55.0
+  },
+  {
+   "member": 5,
+   "order": 3,
+   "H_m": 3.05,
+   "rects": [
+    "25/35"
+   ],
+   "u_flex_seismic": 0.61,
+   "u_flex_gravity": 0.09,
+   "u_shear": 0.421,
+   "As_tot_cm2": 15.3,
+   "N_G_kN": 90.5,
+   "N_Q_kN": 21.0
+  },
+  {
+   "member": 6,
+   "order": 3,
+   "H_m": 3.05,
+   "rects": [
+    "25/70",
+    "55/25",
+    "55/25",
+    "85/25",
+    "55/25"
+   ],
+   "u_flex_seismic": 0.98,
+   "u_flex_gravity": 0.22,
+   "u_shear": 0.987,
+   "As_tot_cm2": 48.3,
+   "N_G_kN": 434.5,
+   "N_Q_kN": 154.0
+  },
+  {
+   "member": 11,
+   "order": 1,
+   "H_m": 3.05,
+   "rects": [
+    "55/25",
+    "25/65"
+   ],
+   "u_flex_seismic": 0.57,
+   "u_flex_gravity": 0.37,
+   "u_shear": 0.32,
+   "As_tot_cm2": 30.5,
+   "N_G_kN": 697.0,
+   "N_Q_kN": 262.0
+  },
+  {
+   "member": 12,
+   "order": 1,
+   "H_m": 3.05,
+   "rects": [
+    "25/70"
+   ],
+   "u_flex_seismic": 0.88,
+   "u_flex_gravity": 0.43,
+   "u_shear": 0.388,
+   "As_tot_cm2": 45.6,
+   "N_G_kN": 413.5,
+   "N_Q_kN": 134.0
+  },
+  {
+   "member": 13,
+   "order": 1,
+   "H_m": 3.05,
+   "rects": [
+    "25/70"
+   ],
+   "u_flex_seismic": 0.9,
+   "u_flex_gravity": 0.34,
+   "u_shear": 0.364,
+   "As_tot_cm2": 60.8,
+   "N_G_kN": 427.5,
+   "N_Q_kN": 140.0
+  },
+  {
+   "member": 14,
+   "order": 1,
+   "H_m": 3.05,
+   "rects": [
+    "55/25",
+    "25/65"
+   ],
+   "u_flex_seismic": 0.52,
+   "u_flex_gravity": 0.34,
+   "u_shear": 0.311,
+   "As_tot_cm2": 30.5,
+   "N_G_kN": 698.0,
+   "N_Q_kN": 262.0
+  },
+  {
+   "member": 1,
+   "order": 4,
+   "H_m": 3.2,
+   "rects": [
+    "55/25",
+    "25/70"
+   ],
+   "u_flex_seismic": 0.41,
+   "u_flex_gravity": 0.36,
+   "u_shear": 0.314,
+   "As_tot_cm2": 30.5,
+   "N_G_kN": 57.0,
+   "N_Q_kN": 17.0
+  },
+  {
+   "member": 2,
+   "order": 4,
+   "H_m": 3.2,
+   "rects": [
+    "50/25"
+   ],
+   "u_flex_seismic": 0.86,
+   "u_flex_gravity": 0.0,
+   "u_shear": 0.429,
+   "As_tot_cm2": 15.3,
+   "N_G_kN": 27.0,
+   "N_Q_kN": 7.0
+  },
+  {
+   "member": 3,
+   "order": 4,
+   "H_m": 3.2,
+   "rects": [
+    "25/35"
+   ],
+   "u_flex_seismic": 0.73,
+   "u_flex_gravity": 0.0,
+   "u_shear": 0.403,
+   "As_tot_cm2": 15.3,
+   "N_G_kN": 26.5,
+   "N_Q_kN": 10.0
+  },
+  {
+   "member": 4,
+   "order": 4,
+   "H_m": 3.2,
+   "rects": [
+    "50/25"
+   ],
+   "u_flex_seismic": 0.77,
+   "u_flex_gravity": 0.0,
+   "u_shear": 0.41,
+   "As_tot_cm2": 15.3,
+   "N_G_kN": 25.0,
+   "N_Q_kN": 6.0
+  },
+  {
+   "member": 5,
+   "order": 4,
+   "H_m": 3.2,
+   "rects": [
+    "25/35"
+   ],
+   "u_flex_seismic": 0.7,
+   "u_flex_gravity": 0.0,
+   "u_shear": 0.403,
+   "As_tot_cm2": 15.3,
+   "N_G_kN": 25.5,
+   "N_Q_kN": 9.0
+  },
+  {
+   "member": 6,
+   "order": 4,
+   "H_m": 3.2,
+   "rects": [
+    "25/70",
+    "55/25",
+    "55/25",
+    "85/25",
+    "55/25"
+   ],
+   "u_flex_seismic": 0.75,
+   "u_flex_gravity": 0.54,
+   "u_shear": 0.607,
+   "As_tot_cm2": 30.5,
+   "N_G_kN": 59.0,
+   "N_Q_kN": 17.0
+  },
+  {
+   "member": 12,
+   "order": 2,
+   "H_m": 3.2,
+   "rects": [
+    "55/25",
+    "25/65"
+   ],
+   "u_flex_seismic": 0.98,
+   "u_flex_gravity": 0.85,
+   "u_shear": 0.621,
+   "As_tot_cm2": 45.6,
+   "N_G_kN": 350.5,
+   "N_Q_kN": 133.0
+  },
+  {
+   "member": 13,
+   "order": 2,
+   "H_m": 3.2,
+   "rects": [
+    "25/70"
+   ],
+   "u_flex_seismic": 1.01,
+   "u_flex_gravity": 1.11,
+   "u_shear": 0.511,
+   "As_tot_cm2": 45.6,
+   "N_G_kN": 199.0,
+   "N_Q_kN": 68.0
+  },
+  {
+   "member": 14,
+   "order": 2,
+   "H_m": 3.2,
+   "rects": [
+    "25/70"
+   ],
+   "u_flex_seismic": 0.94,
+   "u_flex_gravity": 0.66,
+   "u_shear": 0.526,
+   "As_tot_cm2": 58.2,
+   "N_G_kN": 206.0,
+   "N_Q_kN": 71.0
+  },
+  {
+   "member": 15,
+   "order": 1,
+   "H_m": 3.2,
+   "rects": [
+    "55/25",
+    "25/65",
+    "55/25",
+    "85/25",
+    "55/25"
+   ],
+   "u_flex_seismic": 0.95,
+   "u_flex_gravity": 0.88,
+   "u_shear": 0.959,
+   "As_tot_cm2": 45.6,
+   "N_G_kN": 350.5,
+   "N_Q_kN": 133.0
+  },
+  {
+   "member": 5,
+   "order": 5,
+   "H_m": 1.2,
+   "rects": [
+    "55/25",
+    "25/65"
+   ],
+   "u_flex_seismic": 0.49,
+   "u_flex_gravity": 0.0,
+   "u_shear": 0.577,
+   "As_tot_cm2": 30.5,
+   "N_G_kN": 12.5,
+   "N_Q_kN": 0.0
+  },
+  {
+   "member": 6,
+   "order": 5,
+   "H_m": 1.2,
+   "rects": [
+    "25/70"
+   ],
+   "u_flex_seismic": 0.5,
+   "u_flex_gravity": 0.0,
+   "u_shear": 0.514,
+   "As_tot_cm2": 20.4,
+   "N_G_kN": 10.5,
+   "N_Q_kN": 0.0
+  },
+  {
+   "member": 7,
+   "order": 3,
+   "H_m": 1.2,
+   "rects": [
+    "25/70"
+   ],
+   "u_flex_seismic": 0.47,
+   "u_flex_gravity": 0.0,
+   "u_shear": 0.531,
+   "As_tot_cm2": 20.4,
+   "N_G_kN": 15.0,
+   "N_Q_kN": 2.0
+  },
+  {
+   "member": 8,
+   "order": 3,
+   "H_m": 1.2,
+   "rects": [
+    "55/25",
+    "25/65"
+   ],
+   "u_flex_seismic": 0.46,
+   "u_flex_gravity": 0.0,
+   "u_shear": 0.547,
+   "As_tot_cm2": 30.5,
+   "N_G_kN": 12.5,
+   "N_Q_kN": 0.0
+  }
+ ],
+ "steel_kg_per_m3": 102.7,
+ "report_pages": 447,
+ "_source": "Τεύχος στατικών Statics 2023 (Στατική μελέτη αδείας 833237), σελ. 3, 366–439 — ανάγνωση με app/structural.py",
+ "_source_en": "Statics 2023 structural report of permit 833237, pp. 3, 366–439 — parsed with app/structural.py"
+}

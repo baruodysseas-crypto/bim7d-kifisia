@@ -1,0 +1,8 @@
+.venv/
+projects/
+__pycache__/
+*.pyc
+.pytest_cache/
+*.pdf
+!docs/*.pdf
+3d_ktirio*

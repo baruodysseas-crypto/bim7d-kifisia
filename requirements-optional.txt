@@ -1,0 +1,3 @@
+# Optional readers (installed one by one by start.bat; failure is harmless - export OBJ/GLB from Rhino instead)
+rhino3dm>=8.0
+ifcopenshell>=0.8

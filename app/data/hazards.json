@@ -1,0 +1,473 @@
+{
+  "_note": "Παράμετροι προσομοίωσης κινδύνων — ενδεικτικές, επεξεργάσιμες. Αποτελέσματα επιπέδου προμελέτης (screening), όχι ανάλυση επάρκειας. Screening-level hazard parameters, editable.",
+  "damage_grades": [
+    {
+      "grade": 0,
+      "el": "Καμία βλάβη",
+      "en": "No damage"
+    },
+    {
+      "grade": 1,
+      "el": "Αμελητέα–ελαφρά",
+      "en": "Slight"
+    },
+    {
+      "grade": 2,
+      "el": "Μέτρια",
+      "en": "Moderate"
+    },
+    {
+      "grade": 3,
+      "el": "Σοβαρή",
+      "en": "Extensive"
+    },
+    {
+      "grade": 4,
+      "el": "Πολύ σοβαρή",
+      "en": "Very heavy"
+    },
+    {
+      "grade": 5,
+      "el": "Κατάρρευση",
+      "en": "Collapse"
+    }
+  ],
+  "damage_ratio": {
+    "structural": [
+      0.0,
+      0.005,
+      0.02,
+      0.1,
+      0.4,
+      1.0
+    ],
+    "nonstructural_drift": [
+      0.0,
+      0.02,
+      0.1,
+      0.25,
+      0.55,
+      1.0
+    ],
+    "nonstructural_accel": [
+      0.0,
+      0.01,
+      0.05,
+      0.2,
+      0.5,
+      1.0
+    ]
+  },
+  "downtime_days": [
+    0,
+    5,
+    30,
+    120,
+    365,
+    730
+  ],
+  "seismic": {
+    "scenarios": {
+      "small": {
+        "el": "Μικρός σεισμός",
+        "en": "Small earthquake",
+        "Ms": 5.0,
+        "distance_km": 15.0,
+        "annual_probability": 0.1
+      },
+      "moderate": {
+        "el": "Μέτριος σεισμός",
+        "en": "Moderate earthquake",
+        "Ms": 6.0,
+        "distance_km": 10.0,
+        "annual_probability": 0.02
+      },
+      "large": {
+        "el": "Μεγάλος σεισμός",
+        "en": "Large earthquake",
+        "Ms": 6.8,
+        "distance_km": 5.0,
+        "annual_probability": 0.0021
+      }
+    },
+    "code_level_vulnerability": {
+      "none": 0.47,
+      "low": 0.4,
+      "moderate": 0.3,
+      "high": 0.22
+    },
+    "code_level_labels": {
+      "static": "Από τη στατική μελέτη / διατομές του έργου (προτεινόμενο)",
+      "none": "Χωρίς αντισεισμικό (πριν το 1960)",
+      "low": "ΕΑΚ 1959/1984 (χαμηλό)",
+      "moderate": "ΕΑΚ 1993/1995 (μέτριο)",
+      "high": "ΕΑΚ 2000+/Ευρωκώδικας 8 (υψηλό)"
+    },
+    "modifiers": {
+      "pilotis": 0.08,
+      "plan_irregularity": 0.04
+    },
+    "Q": 2.3,
+    "overstrength": 1.8,
+    "storey_weight": {
+      "top_factor": 0.85,
+      "bottom_factor": 1.15,
+      "pilotis_factor": 1.5
+    },
+    "mitigations": {
+      "jacketing": {
+        "el": "Ενίσχυση υποστυλωμάτων (μανδύες/τοιχία)",
+        "en": "Column jacketing / added shear walls",
+        "dV": -0.1,
+        "cost_per_m2_gfa": 90.0,
+        "median_factor": 1.3
+      },
+      "softstorey": {
+        "el": "Ενίσχυση ισογείου (αντιμετώπιση ήπιου ορόφου)",
+        "en": "Soft-storey strengthening",
+        "removes_pilotis": true,
+        "cost_per_m2_gfa": 35.0,
+        "median_factor": 1.0
+      },
+      "nonstructural_bracing": {
+        "el": "Αγκύρωση τοιχοπληρώσεων & εξοπλισμού",
+        "en": "Infill and equipment anchoring",
+        "nonstructural_factor": 0.7,
+        "cost_per_m2_gfa": 18.0
+      }
+    },
+    "fragility": {
+      "_note": "Λογαριθμοκανονικές καμπύλες τρωτότητας ως προς PGA (g) για κατηγορίες ΕΑΚ — ενδεικτικές, βασισμένες σε τυπικές τιμές RC πλαισίων της βιβλιογραφίας (HAZUS/SYNER-G κλίμακας) και ΕΠΕΞΕΡΓΑΣΙΜΕΣ. Lognormal PGA fragility, indicative, editable.",
+      "beta": 0.65,
+      "median_pga_g": {
+        "none": [
+          0.06,
+          0.12,
+          0.22,
+          0.38,
+          0.62
+        ],
+        "low": [
+          0.08,
+          0.16,
+          0.3,
+          0.5,
+          0.85
+        ],
+        "moderate": [
+          0.11,
+          0.23,
+          0.42,
+          0.7,
+          1.15
+        ],
+        "high": [
+          0.15,
+          0.3,
+          0.55,
+          0.95,
+          1.6
+        ]
+      },
+      "median_factor": {
+        "pilotis": 0.75,
+        "plan_irregularity": 0.9
+      }
+    },
+    "code_level_labels_en": {
+      "static": "From the project static study / sections (recommended)",
+      "none": "No seismic design (pre-1960)",
+      "low": "Old code 1959/1984 (low)",
+      "moderate": "Code 1993/1995 (moderate)",
+      "high": "EAK 2000+ / Eurocode 8 (high)"
+    }
+  },
+  "fire": {
+    "internal": {
+      "q_fk_MJ_m2": 780.0,
+      "m_combustion": 0.8,
+      "delta_q2": 0.78,
+      "sprinkler_delta_n": 0.61,
+      "detector_delta_n": 0.87,
+      "compartment_height_m": 2.9,
+      "opening_factor_default": 0.06,
+      "b_default": 1160.0,
+      "required_R_default_min": 60,
+      "spread_probability_vertical": 0.25,
+      "spread_probability_horizontal": 0.15,
+      "ignition_annual_probability_per_dwelling": 0.003,
+      "r_table_columns": [
+        [
+          30,
+          200,
+          25
+        ],
+        [
+          60,
+          250,
+          46
+        ],
+        [
+          90,
+          350,
+          53
+        ],
+        [
+          120,
+          350,
+          57
+        ]
+      ],
+      "damage_origin_compartment": {
+        "finishes": 1.0,
+        "mep": 0.6,
+        "contents": 1.0
+      },
+      "mitigations": {
+        "sprinklers": {
+          "el": "Σύστημα καταιονισμού (sprinklers)",
+          "en": "Sprinkler system",
+          "sprinkler": true,
+          "cost_per_m2_gfa": 28.0
+        },
+        "detectors": {
+          "el": "Ανιχνευτές καπνού & συναγερμός",
+          "en": "Smoke detection and alarm",
+          "detector": true,
+          "cost_per_m2_gfa": 6.0
+        },
+        "compartmentation": {
+          "el": "Πυροδιαμερισματοποίηση (πόρτες EI30, σφράγιση)",
+          "en": "Compartmentation (EI30 doors, sealing)",
+          "spread_factor": 0.4,
+          "cost_per_m2_gfa": 12.0
+        }
+      }
+    },
+    "wildfire": {
+      "intensity_classes": {
+        "low": 500,
+        "moderate": 3000,
+        "high": 10000,
+        "extreme": 30000
+      },
+      "flame_emissive_power_kW_m2": 76.0,
+      "front_width_m": 30.0,
+      "gravity": 9.81,
+      "bal_thresholds_kW_m2": [
+        12.5,
+        19.0,
+        29.0,
+        40.0
+      ],
+      "bal_names": [
+        "BAL-LOW",
+        "BAL-12.5",
+        "BAL-19",
+        "BAL-29",
+        "BAL-40",
+        "BAL-FZ"
+      ],
+      "radiant_damage": {
+        "envelope": [
+          0.0,
+          0.08,
+          0.2,
+          0.45,
+          0.7,
+          1.0
+        ],
+        "exterior_items": [
+          0.02,
+          0.35,
+          0.6,
+          0.9,
+          1.0,
+          1.0
+        ],
+        "interior": [
+          0.0,
+          0.0,
+          0.02,
+          0.1,
+          0.3,
+          0.6
+        ],
+        "structure": [
+          0.0,
+          0.0,
+          0.0,
+          0.01,
+          0.03,
+          0.08
+        ]
+      },
+      "ember_d0_m": 100.0,
+      "ember_d0_per_kmh_m": 8.0,
+      "ember_loss_given_ignition": 0.6,
+      "material_thresholds_kW_m2": [
+        {
+          "id": "glass",
+          "el": "Απλός υαλοπίνακας (θραύση)",
+          "en": "Annealed glass (breakage)",
+          "q": 4.0
+        },
+        {
+          "id": "pvc",
+          "el": "PVC / πλαστικά (μαλάκωμα)",
+          "en": "PVC / plastics (softening)",
+          "q": 12.5
+        },
+        {
+          "id": "timber",
+          "el": "Ξύλο (ανάφλεξη με φλόγα)",
+          "en": "Timber (piloted ignition)",
+          "q": 12.5
+        },
+        {
+          "id": "etics_eps",
+          "el": "Εξωτερική μόνωση EPS (τήξη/ανάφλεξη)",
+          "en": "EPS external insulation (melting)",
+          "q": 12.5
+        },
+        {
+          "id": "tempered",
+          "el": "Ψημένο/laminated γυαλί",
+          "en": "Tempered/laminated glass",
+          "q": 19.0
+        },
+        {
+          "id": "aluminium",
+          "el": "Αλουμίνιο / σκυρόδεμα (ανθεκτικά)",
+          "en": "Aluminium / concrete (resistant)",
+          "q": 40.0
+        }
+      ],
+      "annual_probability": 0.004,
+      "mitigations": {
+        "defensible_space": {
+          "el": "Ζώνη προστασίας βλάστησης (+15 m)",
+          "en": "Defensible space (+15 m)",
+          "distance_add_m": 15.0,
+          "cost_fixed": 3500.0
+        },
+        "shutters": {
+          "el": "Εξωτερικά ρολά/παντζούρια αλουμινίου",
+          "en": "Aluminium shutters",
+          "ember_factor": 0.35,
+          "envelope_factor": 0.6,
+          "cost_per_m2_window": 95.0
+        },
+        "ember_screens": {
+          "el": "Σίτες ανθεκτικές σε ωλοκάρβουνα & καθαρισμός υδρορροών",
+          "en": "Ember screens and gutter guards",
+          "ember_factor": 0.55,
+          "cost_fixed": 1800.0
+        },
+        "noncombustible_cladding": {
+          "el": "Άκαυστη επένδυση όψεων (αντί EPS)",
+          "en": "Non-combustible facade (mineral wool)",
+          "envelope_factor": 0.5,
+          "cost_per_m2_facade": 12.0
+        }
+      },
+      "ember_ignition_given_attack": 0.12
+    }
+  },
+  "flood": {
+    "depth_damage": [
+      [
+        0.0,
+        0.0
+      ],
+      [
+        0.5,
+        0.25
+      ],
+      [
+        1.0,
+        0.4
+      ],
+      [
+        1.5,
+        0.5
+      ],
+      [
+        2.0,
+        0.6
+      ],
+      [
+        3.0,
+        0.75
+      ],
+      [
+        4.0,
+        0.85
+      ],
+      [
+        5.0,
+        0.95
+      ],
+      [
+        6.0,
+        1.0
+      ]
+    ],
+    "scenarios": {
+      "minor": {
+        "el": "Ήπια πλημμύρα (T≈10 έτη)",
+        "en": "Minor flood (T≈10 y)",
+        "depth_m": 0.2,
+        "velocity_ms": 0.5,
+        "annual_probability": 0.1
+      },
+      "moderate": {
+        "el": "Μέτρια πλημμύρα (T≈50 έτη)",
+        "en": "Moderate flood (T≈50 y)",
+        "depth_m": 0.6,
+        "velocity_ms": 1.0,
+        "annual_probability": 0.02
+      },
+      "severe": {
+        "el": "Σοβαρή πλημμύρα (T≈100–200 έτη)",
+        "en": "Severe flood (T≈100–200 y)",
+        "depth_m": 1.2,
+        "velocity_ms": 2.0,
+        "annual_probability": 0.006
+      }
+    },
+    "basement_entry_threshold_m": 0.1,
+    "contents_eur_per_m2": 250.0,
+    "contamination_factor": 1.1,
+    "velocity_structural_threshold_ms": 2.0,
+    "downtime_days_per_m_depth": 45,
+    "mitigations": {
+      "barriers": {
+        "el": "Φράγματα εισόδων / ανυψωμένο κατώφλι",
+        "en": "Door barriers / raised thresholds",
+        "depth_reduction_m": 0.45,
+        "cost_fixed": 6000.0
+      },
+      "backflow": {
+        "el": "Βαλβίδες αντεπιστροφής & αντλία υπογείου",
+        "en": "Backflow valves and sump pump",
+        "basement_factor": 0.55,
+        "cost_fixed": 4500.0
+      },
+      "mep_raise": {
+        "el": "Ανύψωση Η/Μ εγκαταστάσεων πάνω από στάθμη κινδύνου",
+        "en": "Raise MEP above flood level",
+        "mep_factor": 0.3,
+        "cost_fixed": 9000.0
+      }
+    }
+  },
+  "site_exposure_default": {
+    "seismic": 1.0,
+    "fire_internal": 1.0,
+    "wildfire": 0.5,
+    "flood": 0.25,
+    "_note_el": "Συντελεστής έκθεσης θέσης (0 = εκτός ζώνης κινδύνου, 1 = πλήρως εκτεθειμένη). Επεξεργάσιμος.",
+    "_note_en": "Site exposure multiplier (0 = outside hazard zones, 1 = fully exposed). Editable."
+  }
+}

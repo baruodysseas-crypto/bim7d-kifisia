@@ -1,0 +1,235 @@
+{
+ "_note": "Πρόγραμμα συντήρησης & αντικαταστάσεων (7D). annual_pct = ετήσια συντήρηση ως % του αρχικού κόστους των στοιχείων· replace_every = περίοδος αντικατάστασης (έτη)· replace_pct = ποσοστό αρχικού κόστους που αντικαθίσταται· inspect_every = περιοδικός έλεγχος. Ενδεικτικές τιμές (EN 15459 / ΚΕΝΑΚ / εμπειρία), επεξεργάσιμες. Maintenance & replacement schedule, editable.",
+ "defaults": {
+  "horizon_years": 50,
+  "real_discount_pct": 3.0,
+  "energy_escalation_pct": 1.0,
+  "retrofit_year": 0,
+  "residual_value_pct_of_structure": 0.0,
+  "insurance_pct_of_construction": 0.12,
+  "cleaning_eur_per_m2_gfa_year": 2.5
+ },
+ "components": [
+  {
+   "id": "structure",
+   "el": "Φέρων οργανισμός",
+   "en": "Structure",
+   "items": [
+    "concrete_found",
+    "formwork_found",
+    "rebar_found",
+    "concrete_struct",
+    "formwork_struct",
+    "rebar_struct",
+    "balcony_frames"
+   ],
+   "annual_pct": 0.1,
+   "replace_every": null,
+   "replace_pct": 0.0,
+   "inspect_every": 10,
+   "inspect_pct": 0.3,
+   "co2_share": 0.0
+  },
+  {
+   "id": "facade_paint",
+   "el": "Βαφές & σοβάδες όψεων/εσωτερικά",
+   "en": "Paint & plaster",
+   "items": [
+    "painting",
+    "skim_coat"
+   ],
+   "annual_pct": 0.0,
+   "replace_every": 10,
+   "replace_pct": 1.0,
+   "co2_share": 1.0
+  },
+  {
+   "id": "etics",
+   "el": "Θερμομόνωση όψεων (ETICS)",
+   "en": "Facade insulation (ETICS)",
+   "items": [
+    "etics"
+   ],
+   "annual_pct": 0.3,
+   "replace_every": 30,
+   "replace_pct": 0.4,
+   "co2_share": 0.4
+  },
+  {
+   "id": "windows",
+   "el": "Κουφώματα",
+   "en": "Windows",
+   "items": [
+    "windows"
+   ],
+   "annual_pct": 0.8,
+   "replace_every": 35,
+   "replace_pct": 1.0,
+   "co2_share": 1.0
+  },
+  {
+   "id": "windows_hw",
+   "el": "Ειδικά κουφωμάτων (στεγανοποίηση, μηχανισμοί)",
+   "en": "Window seals & hardware",
+   "items": [
+    "windows"
+   ],
+   "annual_pct": 0.0,
+   "replace_every": 15,
+   "replace_pct": 0.1,
+   "co2_share": 0.0
+  },
+  {
+   "id": "roof",
+   "el": "Στεγάνωση δώματος",
+   "en": "Roof waterproofing",
+   "items": [
+    "roof_waterproof"
+   ],
+   "annual_pct": 0.5,
+   "replace_every": 25,
+   "replace_pct": 1.0,
+   "co2_share": 1.0
+  },
+  {
+   "id": "flooring",
+   "el": "Δάπεδα",
+   "en": "Flooring",
+   "items": [
+    "floor_fill",
+    "flooring"
+   ],
+   "annual_pct": 0.0,
+   "replace_every": 35,
+   "replace_pct": 0.6,
+   "co2_share": 0.6
+  },
+  {
+   "id": "plumbing",
+   "el": "Υδραυλικά",
+   "en": "Plumbing",
+   "items": [
+    "plumbing"
+   ],
+   "annual_pct": 0.5,
+   "replace_every": 40,
+   "replace_pct": 0.6,
+   "co2_share": 0.6
+  },
+  {
+   "id": "electrical",
+   "el": "Ηλεκτρολογικά",
+   "en": "Electrical",
+   "items": [
+    "electrical",
+    "power_connection"
+   ],
+   "annual_pct": 0.4,
+   "replace_every": 40,
+   "replace_pct": 0.5,
+   "co2_share": 0.5
+  },
+  {
+   "id": "hvac",
+   "el": "Θέρμανση–ψύξη",
+   "en": "HVAC",
+   "items": [
+    "hvac"
+   ],
+   "annual_pct": 2.0,
+   "replace_every": 18,
+   "replace_pct": 1.0,
+   "co2_share": 1.0
+  },
+  {
+   "id": "elevator",
+   "el": "Ανελκυστήρας",
+   "en": "Elevator",
+   "items": [
+    "elevator"
+   ],
+   "annual_pct": 3.0,
+   "replace_every": 25,
+   "replace_pct": 0.4,
+   "co2_share": 0.4
+  },
+  {
+   "id": "fire_protection",
+   "el": "Πυρασφάλεια",
+   "en": "Fire protection",
+   "items": [
+    "fire_protection"
+   ],
+   "annual_pct": 5.0,
+   "replace_every": 20,
+   "replace_pct": 0.8,
+   "co2_share": 0.8
+  },
+  {
+   "id": "interior_fitout",
+   "el": "Κουζίνες, ντουλάπες, εσωτ. πόρτες",
+   "en": "Kitchens, wardrobes, interior doors",
+   "items": [
+    "kitchens",
+    "wardrobes",
+    "interior_doors",
+    "door_frames"
+   ],
+   "annual_pct": 0.5,
+   "replace_every": 25,
+   "replace_pct": 0.7,
+   "co2_share": 0.7
+  },
+  {
+   "id": "railings_pergolas",
+   "el": "Κιγκλιδώματα & πέργκολες",
+   "en": "Railings & pergolas",
+   "items": [
+    "railings",
+    "pergolas"
+   ],
+   "annual_pct": 1.0,
+   "replace_every": 40,
+   "replace_pct": 0.5,
+   "co2_share": 0.5
+  },
+  {
+   "id": "site",
+   "el": "Περιβάλλων χώρος, κήπος",
+   "en": "Landscaping & garden",
+   "items": [
+    "landscape_works",
+    "paving",
+    "planting",
+    "ramp",
+    "ramp_walls",
+    "fence_wall",
+    "entrance_canopy",
+    "marble_panel",
+    "hedges",
+    "trees"
+   ],
+   "annual_pct": 4.0,
+   "replace_every": 25,
+   "replace_pct": 0.3,
+   "co2_share": 0.3
+  },
+  {
+   "id": "timber",
+   "el": "Ξύλινες επενδύσεις, ζαρντινιέρες, πόρτες περίφραξης",
+   "en": "Timber cladding, planters, fence gates",
+   "items": [
+    "wood_cladding",
+    "planters",
+    "gate_garage",
+    "gate_pedestrian"
+   ],
+   "annual_pct": 3.0,
+   "replace_every": 25,
+   "replace_pct": 1.0,
+   "inspect_every": 2,
+   "inspect_pct": 2.0,
+   "co2_share": 1.0
+  }
+ ]
+}

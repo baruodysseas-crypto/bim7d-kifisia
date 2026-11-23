@@ -1,0 +1,63 @@
+{
+  "_note": "Μέτρα ενεργειακής αναβάθμισης (ενδεικτικά κόστη Αττικής 2026, χωρίς ΦΠΑ – επεξεργάσιμα). Energy upgrade measures (indicative Attica 2026 costs excl. VAT; editable).",
+  "measures": {
+    "roof_insulation_panel": {
+      "el": "Θερμομονωτικό πάνελ οροφής/δώματος (PIR/XPS)", "en": "Roof insulation panel (PIR/XPS)",
+      "type": "roof_insulation", "params": {"thickness_cm": 10.0, "lambda": 0.032},
+      "cost": {"fixed_per_m2": 22.0, "per_cm_per_m2": 2.4, "area": "roof_m2", "components": {"insulation": 0.5, "labour": 0.4, "general": 0.1}},
+      "life_years": 30, "maintenance_pct": 0.5,
+      "hint_el": "Πάνελ πάνω στην πλάκα δώματος με νέα στεγάνωση. Μειώνει το U του δώματος.", "hint_en": "Panel on the roof slab with new waterproofing; lowers the roof U-value."},
+    "wall_insulation_extra": {
+      "el": "Πρόσθετη εξωτερική θερμομόνωση τοίχων (ETICS)", "en": "Additional external wall insulation (ETICS)",
+      "type": "wall_insulation", "params": {"thickness_cm": 6.0, "lambda": 0.034},
+      "cost": {"fixed_per_m2": 30.0, "per_cm_per_m2": 2.0, "area": "wall_m2", "components": {"insulation": 0.45, "labour": 0.45, "general": 0.1}},
+      "life_years": 30, "maintenance_pct": 0.8,
+      "hint_el": "Επιπλέον πάχος εξωτερικής θερμομόνωσης στα αδιαφανή στοιχεία όψεων.", "hint_en": "Extra insulation thickness on opaque facade elements."},
+    "windows_upgrade": {
+      "el": "Αναβάθμιση κουφωμάτων (τριπλό υαλοπίνακα, χαμηλής εκπομπής)", "en": "High-performance windows (triple glazing, low-e)",
+      "type": "windows", "params": {"U_new": 1.0, "g_new": 0.45, "share_pct": 100.0},
+      "cost": {"per_m2": 520.0, "area": "window_m2", "components": {"aluminium": 0.45, "labour": 0.2, "general": 0.35}},
+      "life_years": 35, "maintenance_pct": 0.8,
+      "hint_el": "Αντικατάσταση υαλοπινάκων/κουφωμάτων με υψηλότερης απόδοσης.", "hint_en": "Replace glazing/frames with higher performance units."},
+    "cool_roof": {
+      "el": "Ανακλαστική επικάλυψη δώματος (cool roof)", "en": "Cool-roof reflective coating",
+      "type": "cool_roof", "params": {"alpha_new": 0.25},
+      "cost": {"per_m2": 9.0, "area": "roof_m2", "components": {"plastics": 0.4, "labour": 0.5, "general": 0.1}},
+      "life_years": 10, "maintenance_pct": 2.0,
+      "hint_el": "Μειώνει το φορτίο ψύξης από την ηλιακή απορρόφηση του δώματος.", "hint_en": "Reduces cooling load from roof solar absorption."},
+    "external_shading": {
+      "el": "Εξωτερικός ηλιασμός (περσίδες/πέργκολες)", "en": "External shading (louvres/pergolas)",
+      "type": "shading", "params": {"fsh_summer": 0.40, "fsh_winter": 0.80},
+      "cost": {"per_m2": 110.0, "area": "window_m2", "components": {"aluminium": 0.4, "labour": 0.3, "general": 0.3}},
+      "life_years": 25, "maintenance_pct": 1.5,
+      "hint_el": "Μειώνει τα ηλιακά κέρδη το καλοκαίρι, διατηρεί τα χειμερινά.", "hint_en": "Cuts summer solar gains while keeping winter gains."},
+    "pv_roof_panels": {
+      "el": "Φωτοβολταϊκά πάνελ οροφής", "en": "Rooftop photovoltaic panels",
+      "type": "pv", "params": {"kwp": 12.0, "pr": 0.80, "area_m2_per_kwp": 5.5},
+      "cost": {"per_kwp": 1050.0, "components": {"copper": 0.10, "aluminium": 0.15, "labour": 0.15, "general": 0.60}},
+      "life_years": 25, "maintenance_pct": 1.0, "inverter_life_years": 12, "inverter_cost_per_kwp": 140.0,
+      "hint_el": "Παραγωγή ρεύματος στο δώμα· η αυτοκατανάλωση μειώνει την πρωτογενή ενέργεια.", "hint_en": "On-site generation; self-consumption lowers primary energy."},
+    "heat_pump": {
+      "el": "Αντλία θερμότητας (θέρμανση, ψύξη, ΖΝΧ)", "en": "Reversible heat pump (heating, cooling, DHW)",
+      "type": "heat_pump", "params": {"scop": 3.8, "seer": 6.0, "kw_per_m2": 0.05},
+      "cost": {"per_kw": 900.0, "components": {"copper": 0.2, "steel": 0.2, "electricity": 0.05, "labour": 0.3, "general": 0.25}},
+      "life_years": 18, "maintenance_pct": 2.0,
+      "hint_el": "Αντικαθιστά λέβητα φυσικού αερίου και μονάδες ψύξης.", "hint_en": "Replaces the gas boiler and cooling units."},
+    "mvhr": {
+      "el": "Αερισμός με ανάκτηση θερμότητας (MVHR)", "en": "Ventilation with heat recovery (MVHR)",
+      "type": "mvhr", "params": {"efficiency": 0.75, "fan_kwh_m2": 2.0},
+      "cost": {"per_m2_conditioned": 55.0, "components": {"steel": 0.3, "electricity": 0.1, "labour": 0.35, "general": 0.25}},
+      "life_years": 20, "maintenance_pct": 3.0,
+      "hint_el": "Μειώνει τις απώλειες αερισμού, προσθέτει κατανάλωση ανεμιστήρων.", "hint_en": "Cuts ventilation losses; adds fan electricity."},
+    "bacs": {
+      "el": "Αυτοματισμοί κτιρίου (BACS κατηγορίας Α)", "en": "Building automation (BACS class A)",
+      "type": "bacs", "params": {"heating_factor": 0.90, "cooling_factor": 0.92},
+      "cost": {"per_m2_conditioned": 35.0, "components": {"copper": 0.1, "electricity": 0.1, "labour": 0.4, "general": 0.4}},
+      "life_years": 15, "maintenance_pct": 2.0,
+      "hint_el": "Έλεγχος ανά χώρο και ζώνη, χρονοπρογραμματισμός.", "hint_en": "Zone/room control and scheduling."}
+  },
+  "classes": [["A+", 0.33], ["A", 0.50], ["B+", 0.75], ["B", 1.00], ["Γ", 1.41], ["Δ", 1.82], ["Ε", 2.25], ["Ζ", 2.55], ["Η", 99.0]],
+  "primary_energy_factors": {"electricity": 2.9, "natural_gas": 1.1, "solar": 0.0, "biomass": 0.0},
+  "co2_factors_kg_per_kwh": {"electricity": 0.989, "natural_gas": 0.196},
+  "tariffs_eur_per_kwh": {"electricity": 0.19, "natural_gas": 0.095, "escalation_pct": 2.5}
+}

@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="el">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>7D-BIM Lifecycle</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231a4f94'/%3E%3Ctext x='16' y='22' font-size='15' font-family='Arial' font-weight='700' text-anchor='middle' fill='white'%3E7D%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="/static/app.css">
+<script type="importmap">
+{ "imports": { "three": "/vendor/three/three.module.js", "three/addons/": "/vendor/three/addons/" } }
+</script>
+<script src="/vendor/chart/chart.umd.js"></script>
+</head>
+<body>
+<header id="top">
+  <div class="brand"><span class="logo">7D</span><div><b>BIM Lifecycle</b><small id="sub"></small></div></div>
+  <div class="spacer"></div>
+  <label class="proj-sel"><span id="lblProject"></span>
+    <select id="projectSelect"></select></label>
+  <div class="seg" id="langSeg"><button data-l="el" class="on">ΕΛ</button><button data-l="en">EN</button></div>
+</header>
+<div id="layout">
+  <nav id="nav"></nav>
+  <main id="view"></main>
+</div>
+<div id="toast" role="status"></div>
+<div id="modal" class="hidden"><div class="modal-card"><div id="modalBody"></div></div></div>
+<script type="module" src="/static/js/main.js"></script>
+</body>
+</html>

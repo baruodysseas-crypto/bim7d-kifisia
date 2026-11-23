@@ -1,0 +1,255 @@
+{
+ "_note": "Ενδεικτικοί συντελεστές ενσωματωμένου άνθρακα (A1–A3) ανά μονάδα στοιχείου τιμοκαταλόγου, kgCO2e. Βασίζονται σε τυπικές τιμές βάσεων ICE/EPD και είναι ΕΠΕΞΕΡΓΑΣΙΜΕΣ· για πιστοποιημένη μελέτη χρησιμοποιήστε EPD. Indicative embodied-carbon factors (A1-A3) per price-book unit, kgCO2e; ICE/EPD-type typical values, editable.",
+ "uplift_A4_A5_pct": 8.0,
+ "end_of_life_kg_per_m2_gfa": 12.0,
+ "rebar_recycling_credit_pct": 50.0,
+ "groups": {
+  "structure": {
+   "el": "Φέρων οργανισμός",
+   "en": "Structure"
+  },
+  "envelope": {
+   "el": "Κέλυφος",
+   "en": "Envelope"
+  },
+  "finishes": {
+   "el": "Φινιρίσματα",
+   "en": "Finishes"
+  },
+  "mep": {
+   "el": "Η/Μ & ανελκυστήρας",
+   "en": "MEP & lift"
+  },
+  "site": {
+   "el": "Περιβάλλων χώρος & χωματουργικά",
+   "en": "Site & earthworks"
+  }
+ },
+ "items": {
+  "excavation": {
+   "kg": 2.5,
+   "group": "site"
+  },
+  "backfill": {
+   "kg": 3.0,
+   "group": "site"
+  },
+  "concrete_found": {
+   "kg": 290.0,
+   "group": "structure"
+  },
+  "formwork_found": {
+   "kg": 4.0,
+   "group": "structure"
+  },
+  "rebar_found": {
+   "kg": 1.2,
+   "group": "structure",
+   "material": "rebar"
+  },
+  "concrete_struct": {
+   "kg": 290.0,
+   "group": "structure"
+  },
+  "formwork_struct": {
+   "kg": 4.0,
+   "group": "structure"
+  },
+  "rebar_struct": {
+   "kg": 1.2,
+   "group": "structure",
+   "material": "rebar"
+  },
+  "masonry_ext": {
+   "kg": 35.0,
+   "group": "envelope"
+  },
+  "masonry_int": {
+   "kg": 20.0,
+   "group": "finishes"
+  },
+  "etics": {
+   "kg": 14.0,
+   "group": "envelope"
+  },
+  "plumbing": {
+   "kg": 6.0,
+   "group": "mep"
+  },
+  "door_frames": {
+   "kg": 120.0,
+   "group": "envelope"
+  },
+  "electrical": {
+   "kg": 7.0,
+   "group": "mep"
+  },
+  "railings": {
+   "kg": 45.0,
+   "group": "finishes"
+  },
+  "plaster_rough": {
+   "kg": 6.0,
+   "group": "finishes"
+  },
+  "plaster_fine": {
+   "kg": 2.0,
+   "group": "finishes"
+  },
+  "cleaning": {
+   "kg": 0.0,
+   "group": "site"
+  },
+  "hvac": {
+   "kg": 18.0,
+   "group": "mep"
+  },
+  "floor_fill": {
+   "kg": 9.0,
+   "group": "finishes"
+  },
+  "flooring": {
+   "kg": 18.0,
+   "group": "finishes"
+  },
+  "skim_coat": {
+   "kg": 0.8,
+   "group": "finishes"
+  },
+  "windows": {
+   "kg": 140.0,
+   "group": "envelope"
+  },
+  "interior_doors": {
+   "kg": 35.0,
+   "group": "finishes"
+  },
+  "wardrobes": {
+   "kg": 550.0,
+   "group": "finishes"
+  },
+  "kitchens": {
+   "kg": 900.0,
+   "group": "finishes"
+  },
+  "painting": {
+   "kg": 0.9,
+   "group": "finishes"
+  },
+  "landscape_works": {
+   "kg": 1.5,
+   "group": "site"
+  },
+  "paving": {
+   "kg": 22.0,
+   "group": "site"
+  },
+  "planting": {
+   "kg": 0.0,
+   "group": "site"
+  },
+  "power_connection": {
+   "kg": 50.0,
+   "group": "mep"
+  },
+  "elevator": {
+   "kg": 15000.0,
+   "group": "mep"
+  },
+  "fire_protection": {
+   "kg": 1.5,
+   "group": "mep"
+  },
+  "handover": {
+   "kg": 0.0,
+   "group": "site"
+  },
+  "roof_waterproof": {
+   "kg": 9.0,
+   "group": "envelope"
+  },
+  "pergolas": {
+   "kg": 60.0,
+   "group": "finishes"
+  },
+  "ramp": {
+   "kg": 85.0,
+   "group": "site"
+  },
+  "ramp_walls": {
+   "kg": 95.0,
+   "group": "site"
+  },
+  "fence_wall": {
+   "kg": 60.0,
+   "group": "site"
+  },
+  "entrance_canopy": {
+   "kg": 900.0,
+   "group": "site"
+  },
+  "marble_panel": {
+   "kg": 40.0,
+   "group": "site"
+  },
+  "hedges": {
+   "kg": 2.0,
+   "group": "site"
+  },
+  "trees": {
+   "kg": 10.0,
+   "group": "site"
+  },
+  "planters": {
+   "kg": 35.0,
+   "group": "finishes"
+  },
+  "balcony_frames": {
+   "kg": 330.0,
+   "group": "structure"
+  },
+  "wood_cladding": {
+   "kg": 18.0,
+   "group": "envelope"
+  },
+  "gate_garage": {
+   "kg": 350.0,
+   "group": "site"
+  },
+  "gate_pedestrian": {
+   "kg": 90.0,
+   "group": "site"
+  }
+ },
+ "measures_kg": {
+  "roof_insulation_panel": {
+   "per_m2": 9.0
+  },
+  "wall_insulation_extra": {
+   "per_m2": 1.6,
+   "per_cm_per_m2": 1.6
+  },
+  "windows_upgrade": {
+   "per_m2": 160.0
+  },
+  "cool_roof": {
+   "per_m2": 1.2
+  },
+  "external_shading": {
+   "per_m2": 40.0
+  },
+  "pv_roof_panels": {
+   "per_kwp": 900.0
+  },
+  "heat_pump": {
+   "per_kw": 120.0
+  },
+  "mvhr": {
+   "per_m2": 12.0
+  },
+  "bacs": {
+   "per_m2": 4.0
+  }
+ },
+ "grid_decarbonisation_pct_per_year": 2.5
+}

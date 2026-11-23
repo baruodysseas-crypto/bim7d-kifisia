@@ -1,0 +1,813 @@
+{
+ "_note": "Ενδεικτικές τιμές αγοράς Αττικής (€ χωρίς ΦΠΑ, υλικό+εργασία). Όλες οι τιμές είναι επεξεργάσιμες από τον χρήστη. Indicative Attica market prices (EUR excl. VAT, material+labour); all values are user-editable.",
+ "base_period": "2025-09",
+ "overheads": {
+  "general_expenses_pct": 12.0,
+  "profit_pct": 10.0,
+  "vat_pct": 24.0,
+  "contingency_pct": 3.0
+ },
+ "items": {
+  "excavation": {
+   "el": "Εκσκαφές",
+   "en": "Excavation",
+   "unit": "m3",
+   "price": 14.0,
+   "qty": "excavation_m3",
+   "task": 1,
+   "trade": "earthworks",
+   "components": {
+    "fuel": 0.35,
+    "labour": 0.35,
+    "general": 0.3
+   }
+  },
+  "backfill": {
+   "el": "Επιχώσεις",
+   "en": "Backfilling",
+   "unit": "m3",
+   "price": 11.0,
+   "qty": "backfill_m3",
+   "task": 5,
+   "trade": "earthworks",
+   "components": {
+    "fuel": 0.3,
+    "labour": 0.4,
+    "general": 0.3
+   }
+  },
+  "excavation_haul": {
+   "el": "Φόρτωση – μεταφορά – απόθεση προϊόντων εκσκαφής",
+   "en": "Loading, hauling and disposal of excavated soil",
+   "unit": "m3",
+   "price": 9.0,
+   "qty": "excavation_haul_m3",
+   "task": 1,
+   "trade": "earthworks",
+   "components": {
+    "fuel": 0.45,
+    "labour": 0.2,
+    "general": 0.35
+   }
+  },
+  "basement_waterproof": {
+   "el": "Στεγάνωση υπογείου (μεμβράνες τοιχίων και κάτω από τη ράφτα)",
+   "en": "Basement waterproofing (wall and under-raft membranes)",
+   "unit": "m2",
+   "price": 24.0,
+   "qty": "waterproof_basement_m2",
+   "task": 2,
+   "trade": "structure",
+   "components": {
+    "plastics": 0.45,
+    "labour": 0.4,
+    "general": 0.15
+   }
+  },
+  "concrete_found": {
+   "el": "Σκυρόδεμα θεμελίωσης C25/30",
+   "en": "Foundation concrete C25/30",
+   "unit": "m3",
+   "price": 135.0,
+   "qty": "concrete_foundation_m3",
+   "task": 2,
+   "trade": "structure",
+   "components": {
+    "concrete": 0.78,
+    "labour": 0.12,
+    "fuel": 0.1
+   }
+  },
+  "formwork_found": {
+   "el": "Ξυλότυπος θεμελίωσης",
+   "en": "Foundation formwork",
+   "unit": "m2",
+   "price": 26.0,
+   "qty": "formwork_foundation_m2",
+   "task": 2,
+   "trade": "structure",
+   "components": {
+    "labour": 0.6,
+    "general": 0.4
+   }
+  },
+  "rebar_found": {
+   "el": "Χάλυβας B500C θεμελίωσης",
+   "en": "Foundation rebar B500C",
+   "unit": "kg",
+   "price": 1.2,
+   "qty": "rebar_foundation_kg",
+   "task": 2,
+   "trade": "structure",
+   "components": {
+    "steel_rebar": 0.62,
+    "labour": 0.33,
+    "fuel": 0.05
+   }
+  },
+  "concrete_struct": {
+   "el": "Σκυρόδεμα φέροντος οργανισμού C25/30",
+   "en": "Structural concrete C25/30",
+   "unit": "m3",
+   "price": 150.0,
+   "qty": "concrete_structure_m3",
+   "task": 3,
+   "trade": "structure",
+   "components": {
+    "concrete": 0.72,
+    "labour": 0.18,
+    "fuel": 0.1
+   }
+  },
+  "formwork_struct": {
+   "el": "Ξυλότυπος φέροντος οργανισμού",
+   "en": "Structural formwork",
+   "unit": "m2",
+   "price": 30.0,
+   "qty": "formwork_structure_m2",
+   "task": 3,
+   "trade": "structure",
+   "components": {
+    "labour": 0.6,
+    "general": 0.4
+   }
+  },
+  "rebar_struct": {
+   "el": "Χάλυβας B500C φέροντος οργανισμού",
+   "en": "Structural rebar B500C",
+   "unit": "kg",
+   "price": 1.25,
+   "qty": "rebar_structure_kg",
+   "task": 3,
+   "trade": "structure",
+   "components": {
+    "steel_rebar": 0.62,
+    "labour": 0.33,
+    "fuel": 0.05
+   }
+  },
+  "masonry_ext": {
+   "el": "Τοιχοποιία εξωτερική διπλή",
+   "en": "External masonry (double leaf)",
+   "unit": "m2",
+   "price": 40.0,
+   "qty": "masonry_external_m2",
+   "task": 4,
+   "trade": "envelope",
+   "components": {
+    "masonry": 0.5,
+    "labour": 0.45,
+    "general": 0.05
+   }
+  },
+  "masonry_int": {
+   "el": "Τοιχοποιία εσωτερική",
+   "en": "Internal masonry",
+   "unit": "m2",
+   "price": 24.0,
+   "qty": "masonry_internal_m2",
+   "task": 4,
+   "trade": "envelope",
+   "components": {
+    "masonry": 0.45,
+    "labour": 0.5,
+    "general": 0.05
+   }
+  },
+  "lintels": {
+   "el": "Πρέκια ανοιγμάτων από οπλισμένο σκυρόδεμα (σκυρόδεμα, ξυλότυπος, οπλισμός)",
+   "en": "Reinforced-concrete lintels over openings (concrete, formwork, rebar)",
+   "unit": "m",
+   "price": 36.0,
+   "qty": "lintel_length_m",
+   "task": 4,
+   "trade": "envelope",
+   "components": {
+    "concrete": 0.3,
+    "steel_rebar": 0.2,
+    "labour": 0.45,
+    "general": 0.05
+   }
+  },
+  "etics": {
+   "el": "Εξωτερική θερμομόνωση 10 cm",
+   "en": "External insulation (ETICS) 10 cm",
+   "unit": "m2",
+   "price": 48.0,
+   "qty": "insulation_wall_m2",
+   "task": 4,
+   "trade": "envelope",
+   "components": {
+    "insulation": 0.55,
+    "labour": 0.4,
+    "general": 0.05
+   }
+  },
+  "plumbing": {
+   "el": "Υδραυλικά – αποχέτευση",
+   "en": "Plumbing & drainage",
+   "unit": "m2",
+   "price": 70.0,
+   "qty": "conditioned_area_m2",
+   "task": 6,
+   "trade": "mep",
+   "components": {
+    "plastics": 0.35,
+    "copper": 0.15,
+    "labour": 0.45,
+    "general": 0.05
+   }
+  },
+  "door_frames": {
+   "el": "Κασώματα και πόρτες ασφαλείας",
+   "en": "Door frames & security doors",
+   "unit": "pcs",
+   "price": 1250.0,
+   "qty": "security_doors",
+   "task": 7,
+   "trade": "finishes",
+   "components": {
+    "steel": 0.5,
+    "labour": 0.3,
+    "general": 0.2
+   }
+  },
+  "electrical": {
+   "el": "Ηλεκτρολογικά",
+   "en": "Electrical installation",
+   "unit": "m2",
+   "price": 85.0,
+   "qty": "conditioned_area_m2",
+   "task": 8,
+   "trade": "mep",
+   "components": {
+    "copper": 0.3,
+    "plastics": 0.1,
+    "labour": 0.5,
+    "general": 0.1
+   }
+  },
+  "railings": {
+   "el": "Κιγκλιδώματα – στηθαία γυαλιού",
+   "en": "Railings & glass balustrades",
+   "unit": "m",
+   "price": 260.0,
+   "qty": "railing_length_m",
+   "task": 9,
+   "trade": "finishes",
+   "components": {
+    "aluminium": 0.4,
+    "labour": 0.4,
+    "general": 0.2
+   }
+  },
+  "plaster_rough": {
+   "el": "Χονδρά επιχρίσματα",
+   "en": "Rough plaster",
+   "unit": "m2",
+   "price": 13.0,
+   "qty": "plaster_m2",
+   "task": 10,
+   "trade": "finishes",
+   "components": {
+    "masonry": 0.3,
+    "labour": 0.65,
+    "general": 0.05
+   }
+  },
+  "plaster_fine": {
+   "el": "Ψιλά επιχρίσματα",
+   "en": "Fine plaster",
+   "unit": "m2",
+   "price": 9.0,
+   "qty": "plaster_m2",
+   "task": 11,
+   "trade": "finishes",
+   "components": {
+    "masonry": 0.25,
+    "labour": 0.7,
+    "general": 0.05
+   }
+  },
+  "cleaning": {
+   "el": "Καθαρισμός οικοδομής",
+   "en": "Site cleaning",
+   "unit": "m2",
+   "price": 4.0,
+   "qty": "gfa_m2",
+   "task": 12,
+   "trade": "general",
+   "components": {
+    "labour": 0.9,
+    "general": 0.1
+   }
+  },
+  "hvac": {
+   "el": "Θέρμανση – ψύξη – αερισμός",
+   "en": "HVAC",
+   "unit": "m2",
+   "price": 140.0,
+   "qty": "conditioned_area_m2",
+   "task": 13,
+   "trade": "mep",
+   "components": {
+    "copper": 0.2,
+    "steel": 0.2,
+    "electricity": 0.05,
+    "labour": 0.35,
+    "general": 0.2
+   }
+  },
+  "basement_floor": {
+   "el": "Δάπεδο υπογείου – βιομηχανικό δάπεδο με σκληρυντικό",
+   "en": "Basement floor – power-floated hardened slab",
+   "unit": "m2",
+   "price": 22.0,
+   "qty": "basement_floor_m2",
+   "task": 14,
+   "trade": "finishes",
+   "components": {
+    "concrete": 0.4,
+    "labour": 0.45,
+    "general": 0.15
+   }
+  },
+  "floor_fill": {
+   "el": "Γεμίσματα δαπέδων",
+   "en": "Floor screed/fill",
+   "unit": "m2",
+   "price": 14.0,
+   "qty": "floor_finish_m2",
+   "task": 14,
+   "trade": "finishes",
+   "components": {
+    "concrete": 0.45,
+    "labour": 0.5,
+    "general": 0.05
+   }
+  },
+  "flooring": {
+   "el": "Δάπεδα (πλακίδια/παρκέ)",
+   "en": "Flooring (tiles/parquet)",
+   "unit": "m2",
+   "price": 58.0,
+   "qty": "floor_finish_m2",
+   "task": 15,
+   "trade": "finishes",
+   "components": {
+    "masonry": 0.35,
+    "labour": 0.4,
+    "general": 0.25
+   }
+  },
+  "skim_coat": {
+   "el": "Σπατουλαρίσματα",
+   "en": "Skim coat",
+   "unit": "m2",
+   "price": 7.0,
+   "qty": "plaster_m2",
+   "task": 16,
+   "trade": "finishes",
+   "components": {
+    "masonry": 0.2,
+    "labour": 0.75,
+    "general": 0.05
+   }
+  },
+  "windows": {
+   "el": "Εξωτερικά κουφώματα αλουμινίου θερμοδιακοπής (παράθυρα, μπαλκονόπορτες, είσοδος), διπλά υαλοστάσια",
+   "en": "Aluminium thermal-break frames (windows, balcony doors, entrance), double glazing",
+   "unit": "m2",
+   "price": 420.0,
+   "qty": "window_area_m2",
+   "task": 17,
+   "trade": "envelope",
+   "components": {
+    "aluminium": 0.45,
+    "labour": 0.2,
+    "general": 0.35
+   }
+  },
+  "garage_door": {
+   "el": "Πόρτα γκαράζ (ηλεκτροκίνητο ρολό)",
+   "en": "Garage door (motorised roller shutter)",
+   "unit": "m2",
+   "price": 260.0,
+   "qty": "garage_door_area_m2",
+   "task": 17,
+   "trade": "envelope",
+   "components": {
+    "steel": 0.55,
+    "labour": 0.2,
+    "general": 0.25
+   }
+  },
+  "interior_doors": {
+   "el": "Εσωτερικές πόρτες",
+   "en": "Interior doors",
+   "unit": "pcs",
+   "price": 380.0,
+   "qty": "interior_doors",
+   "task": 18,
+   "trade": "finishes",
+   "components": {
+    "general": 0.5,
+    "labour": 0.3,
+    "plastics": 0.2
+   }
+  },
+  "wardrobes": {
+   "el": "Ντουλάπες",
+   "en": "Wardrobes",
+   "unit": "apt",
+   "price": 4500.0,
+   "qty": "apartments",
+   "task": 19,
+   "trade": "finishes",
+   "components": {
+    "general": 0.55,
+    "labour": 0.45
+   }
+  },
+  "kitchens": {
+   "el": "Έπιπλα κουζίνας",
+   "en": "Kitchen units",
+   "unit": "apt",
+   "price": 7500.0,
+   "qty": "apartments",
+   "task": 20,
+   "trade": "finishes",
+   "components": {
+    "general": 0.6,
+    "labour": 0.4
+   }
+  },
+  "painting": {
+   "el": "Χρωματισμοί",
+   "en": "Painting",
+   "unit": "m2",
+   "price": 9.0,
+   "qty": "paint_m2",
+   "task": 21,
+   "trade": "finishes",
+   "components": {
+    "plastics": 0.3,
+    "labour": 0.65,
+    "general": 0.05
+   }
+  },
+  "landscape_works": {
+   "el": "Γενική διαμόρφωση περιβάλλοντος (εξομάλυνση, αποχέτευση ομβρίων)",
+   "en": "General site preparation (grading, storm drainage)",
+   "unit": "m2",
+   "price": 8.0,
+   "qty": "site_area_m2",
+   "task": 22,
+   "trade": "site",
+   "components": {
+    "concrete": 0.2,
+    "labour": 0.5,
+    "fuel": 0.1,
+    "general": 0.2
+   }
+  },
+  "fence": {
+   "el": "Περίφραξη προσόψεως οικοπέδου",
+   "en": "Street-side boundary fence",
+   "unit": "m",
+   "price": 150.0,
+   "qty": "fence_length_m",
+   "task": 22,
+   "trade": "site",
+   "components": {
+    "steel": 0.45,
+    "labour": 0.35,
+    "general": 0.2
+   }
+  },
+  "paving": {
+   "el": "Πεζοδρόμια – επιστρώσεις",
+   "en": "Paving",
+   "unit": "m2",
+   "price": 65.0,
+   "qty": "paving_m2",
+   "task": 23,
+   "trade": "site",
+   "components": {
+    "masonry": 0.4,
+    "labour": 0.45,
+    "general": 0.15
+   }
+  },
+  "planting": {
+   "el": "Φύτευση",
+   "en": "Planting",
+   "unit": "m2",
+   "price": 28.0,
+   "qty": "planting_m2",
+   "task": 24,
+   "trade": "site",
+   "components": {
+    "general": 0.7,
+    "labour": 0.3
+   }
+  },
+  "power_connection": {
+   "el": "Ηλεκτροδότηση",
+   "en": "Power connection",
+   "unit": "apt",
+   "price": 900.0,
+   "qty": "apartments",
+   "task": 25,
+   "trade": "mep",
+   "components": {
+    "copper": 0.3,
+    "labour": 0.5,
+    "general": 0.2
+   }
+  },
+  "elevator": {
+   "el": "Ανελκυστήρας",
+   "en": "Elevator",
+   "unit": "pcs",
+   "price": 28000.0,
+   "qty": "elevators",
+   "task": 8,
+   "trade": "mep",
+   "components": {
+    "steel": 0.5,
+    "electricity": 0.05,
+    "labour": 0.2,
+    "general": 0.25
+   }
+  },
+  "fire_protection": {
+   "el": "Πυροπροστασία (ενεργητική – παθητική)",
+   "en": "Fire protection (active/passive)",
+   "unit": "m2",
+   "price": 12.0,
+   "qty": "gfa_m2",
+   "task": 8,
+   "trade": "mep",
+   "components": {
+    "steel": 0.3,
+    "labour": 0.4,
+    "general": 0.3
+   }
+  },
+  "handover": {
+   "el": "Αποπεράτωση – παράδοση",
+   "en": "Handover & snagging",
+   "unit": "m2",
+   "price": 3.0,
+   "qty": "gfa_m2",
+   "task": 26,
+   "trade": "general",
+   "components": {
+    "labour": 0.9,
+    "general": 0.1
+   }
+  },
+  "roof_waterproof": {
+   "el": "Στεγάνωση – θερμομόνωση δώματος",
+   "en": "Roof waterproofing & insulation",
+   "unit": "m2",
+   "price": 62.0,
+   "qty": "roof_area_m2",
+   "task": 4,
+   "trade": "envelope",
+   "components": {
+    "insulation": 0.45,
+    "labour": 0.4,
+    "general": 0.15
+   }
+  },
+  "pergolas": {
+   "el": "Πέργκολες – περσίδες ξύλου",
+   "en": "Timber pergolas & louvres",
+   "unit": "m2",
+   "price": 190.0,
+   "qty": "pergola_area_m2",
+   "task": 9,
+   "trade": "finishes",
+   "components": {
+    "general": 0.5,
+    "labour": 0.4,
+    "fuel": 0.1
+   }
+  },
+  "electrical_common": {
+   "el": "Ηλεκτρολογικά κοινόχρηστων και υπογείου (φωτισμός, πίνακες)",
+   "en": "Electrical of common areas and basement",
+   "unit": "m2",
+   "price": 25.0,
+   "qty": "common_areas_m2",
+   "task": 8,
+   "trade": "mep",
+   "components": {
+    "copper": 0.3,
+    "plastics": 0.1,
+    "labour": 0.5,
+    "general": 0.1
+   }
+  },
+  "plumbing_common": {
+   "el": "Αποχέτευση – ύδρευση κοινόχρηστων και υπογείου",
+   "en": "Plumbing/drainage of common areas and basement",
+   "unit": "m2",
+   "price": 12.0,
+   "qty": "common_areas_m2",
+   "task": 6,
+   "trade": "mep",
+   "components": {
+    "plastics": 0.35,
+    "copper": 0.15,
+    "labour": 0.45,
+    "general": 0.05
+   }
+  },
+  "ramp": {
+   "el": "Ράμπα υπογείου από οπλισμένο σκυρόδεμα με αντιολισθητική επιφάνεια",
+   "en": "Basement ramp, reinforced concrete with anti-slip finish",
+   "unit": "m2",
+   "price": 95.0,
+   "qty": "ramp_m2",
+   "task": 22,
+   "trade": "site",
+   "components": {
+    "concrete": 0.45,
+    "steel_rebar": 0.15,
+    "labour": 0.3,
+    "general": 0.1
+   },
+   "source": "ενδεικτική τιμή αγοράς Αττικής (παραδοχή)"
+  },
+  "ramp_walls": {
+   "el": "Τοιχία αντιστήριξης ράμπας από οπλισμένο σκυρόδεμα",
+   "en": "Ramp retaining walls, reinforced concrete",
+   "unit": "m2",
+   "price": 160.0,
+   "qty": "ramp_wall_m2",
+   "task": 22,
+   "trade": "site",
+   "components": {
+    "concrete": 0.4,
+    "steel_rebar": 0.2,
+    "labour": 0.3,
+    "general": 0.1
+   },
+   "source": "ενδεικτική τιμή αγοράς Αττικής (παραδοχή)"
+  },
+  "fence_wall": {
+   "el": "Τοιχίο περίφραξης προσόψεως και πεσσοί, επιχρισμένα",
+   "en": "Street-front low wall and gate pillars, rendered",
+   "unit": "m",
+   "price": 120.0,
+   "qty": "fence_wall_m",
+   "task": 22,
+   "trade": "site",
+   "components": {
+    "concrete": 0.35,
+    "masonry": 0.15,
+    "labour": 0.4,
+    "general": 0.1
+   },
+   "source": "ενδεικτική τιμή αγοράς Αττικής (παραδοχή)"
+  },
+  "gate_garage": {
+   "el": "Συρόμενη αυτόματη πόρτα γκαράζ με ξύλινη επένδυση",
+   "en": "Automatic sliding garage gate with timber cladding",
+   "unit": "τεμ.",
+   "price": 4800.0,
+   "qty": "gate_garage",
+   "task": 22,
+   "trade": "site",
+   "components": {
+    "steel": 0.4,
+    "general": 0.3,
+    "labour": 0.3
+   },
+   "source": "ενδεικτική τιμή αγοράς Αττικής (παραδοχή)"
+  },
+  "gate_pedestrian": {
+   "el": "Πόρτα εισόδου περίφραξης με ξύλινη επένδυση και θυροτηλέφωνο",
+   "en": "Pedestrian gate with timber cladding and entry phone",
+   "unit": "τεμ.",
+   "price": 1600.0,
+   "qty": "gate_pedestrian",
+   "task": 22,
+   "trade": "site",
+   "components": {
+    "steel": 0.4,
+    "general": 0.35,
+    "labour": 0.25
+   },
+   "source": "ενδεικτική τιμή αγοράς Αττικής (παραδοχή)"
+  },
+  "entrance_canopy": {
+   "el": "Στέγαστρο εισόδου από οπλισμένο σκυρόδεμα, επιχρισμένο και βαμμένο",
+   "en": "Entrance canopy, reinforced concrete, rendered and painted",
+   "unit": "τεμ.",
+   "price": 3500.0,
+   "qty": "entrance_canopy",
+   "task": 22,
+   "trade": "site",
+   "components": {
+    "concrete": 0.35,
+    "steel_rebar": 0.1,
+    "labour": 0.4,
+    "general": 0.15
+   },
+   "source": "ενδεικτική τιμή αγοράς Αττικής (παραδοχή)"
+  },
+  "marble_panel": {
+   "el": "Επένδυση με μαύρο μάρμαρο (γραμματοκιβώτια εισόδου)",
+   "en": "Black marble cladding (entrance letterboxes)",
+   "unit": "m2",
+   "price": 180.0,
+   "qty": "marble_m2",
+   "task": 23,
+   "trade": "site",
+   "components": {
+    "masonry": 0.5,
+    "labour": 0.35,
+    "general": 0.15
+   },
+   "source": "ενδεικτική τιμή αγοράς Αττικής (παραδοχή)"
+  },
+  "hedges": {
+   "el": "Φυτοφράχτες – θάμνοι κατά μήκος της περίφραξης",
+   "en": "Hedges and shrubs along the fences",
+   "unit": "m",
+   "price": 45.0,
+   "qty": "hedge_m",
+   "task": 24,
+   "trade": "site",
+   "components": {
+    "general": 0.7,
+    "labour": 0.3
+   },
+   "source": "ενδεικτική τιμή αγοράς Αττικής (παραδοχή)"
+  },
+  "trees": {
+   "el": "Δέντρα (πεύκα) μεγάλου μεγέθους με φύτευση",
+   "en": "Large trees (pines) supplied and planted",
+   "unit": "τεμ.",
+   "price": 350.0,
+   "qty": "trees",
+   "task": 24,
+   "trade": "site",
+   "components": {
+    "general": 0.75,
+    "labour": 0.25
+   },
+   "source": "ενδεικτική τιμή αγοράς Αττικής (παραδοχή)"
+  },
+  "planters": {
+   "el": "Ζαρντινιέρες εξωστών με ξύλινη επένδυση, στεγάνωση, αποστράγγιση, χώμα και φυτά",
+   "en": "Balcony planters with timber cladding, waterproofing, drainage, soil and plants",
+   "unit": "m",
+   "price": 260.0,
+   "qty": "planter_m",
+   "task": 9,
+   "trade": "finishes",
+   "components": {
+    "general": 0.45,
+    "plastics": 0.15,
+    "labour": 0.4
+   },
+   "source": "ενδεικτική τιμή αγοράς Αττικής (παραδοχή)"
+  },
+  "balcony_frames": {
+   "el": "Πλαίσια εξωστών από οπλισμένο σκυρόδεμα (σκυρόδεμα, ξυλότυπος, οπλισμός)",
+   "en": "Balcony frames, reinforced concrete (concrete, formwork, rebar)",
+   "unit": "m3",
+   "price": 520.0,
+   "qty": "frame_m3",
+   "task": 3,
+   "trade": "structure",
+   "components": {
+    "concrete": 0.3,
+    "steel_rebar": 0.25,
+    "labour": 0.4,
+    "general": 0.05
+   },
+   "source": "ενδεικτική τιμή αγοράς Αττικής (παραδοχή)"
+  },
+  "wood_cladding": {
+   "el": "Ξύλινες επενδύσεις και περσίδες όψεων (θερμοξύλο σε μεταλλικό σκελετό)",
+   "en": "Timber facade cladding and louvres (thermowood on a metal subframe)",
+   "unit": "m2",
+   "price": 210.0,
+   "qty": "wood_cladding_m2",
+   "task": 9,
+   "trade": "finishes",
+   "components": {
+    "general": 0.5,
+    "steel": 0.15,
+    "labour": 0.35
+   },
+   "source": "ενδεικτική τιμή αγοράς Αττικής (παραδοχή)"
+  }
+ }
+}

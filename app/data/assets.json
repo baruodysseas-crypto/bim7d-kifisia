@@ -1,0 +1,281 @@
+{
+ "_note": "Μητρώο εγκαταστάσεων και περιουσιακών στοιχείων (7D). Κάθε στοιχείο συνδέεται με ένα στοιχείο του προγράμματος συντήρησης (κόστος από το 5D) και έχει περιοδικές εργασίες. Οι συχνότητες είναι ενδεικτικές· οι νομοθετικές αναφορές δίνονται για έλεγχο από τον διαχειριστή.",
+ "allocation": {
+  "_note": "Πώς μοιράζεται το κόστος κάθε στοιχείου: σε στήλη του πίνακα ποσοστών (κοινόχρηστο) ή 'private' (το πληρώνει κάθε διαμέρισμα για τον δικό του χώρο, ανάλογα με το εμβαδόν του).",
+  "structure": {
+   "maintenance": 1.0
+  },
+  "facade_paint": {
+   "maintenance": 0.5,
+   "private": 0.5
+  },
+  "etics": {
+   "maintenance": 1.0
+  },
+  "windows": {
+   "private": 1.0
+  },
+  "windows_hw": {
+   "private": 1.0
+  },
+  "roof": {
+   "maintenance": 1.0
+  },
+  "flooring": {
+   "maintenance": 0.15,
+   "private": 0.85
+  },
+  "plumbing": {
+   "maintenance": 0.4,
+   "private": 0.6
+  },
+  "electrical": {
+   "maintenance": 0.3,
+   "lighting": 0.1,
+   "private": 0.6
+  },
+  "hvac": {
+   "private": 1.0
+  },
+  "elevator": {
+   "lift": 1.0
+  },
+  "fire_protection": {
+   "maintenance": 1.0
+  },
+  "interior_fitout": {
+   "private": 1.0
+  },
+  "railings_pergolas": {
+   "maintenance": 1.0
+  },
+  "site": {
+   "garden": 1.0
+  },
+  "_measures": {
+   "maintenance": 1.0
+  },
+  "_insurance": {
+   "plot": 1.0
+  },
+  "_cleaning": {
+   "cleaning": 1.0
+  },
+  "_energy_common": {
+   "lighting": 0.6,
+   "lift": 0.4
+  },
+  "_energy_private": {
+   "private_energy": 1.0
+  },
+  "timber": {
+   "maintenance": 1.0
+  }
+ },
+ "common_energy_pct": 10.0,
+ "assets": [
+  {
+   "id": "lift",
+   "component": "elevator",
+   "el": "Ανελκυστήρας",
+   "en": "Lift",
+   "where": "common",
+   "storey": "all",
+   "tasks": [
+    {
+     "el": "Τακτική συντήρηση από αδειούχο συντηρητή",
+     "en": "Routine maintenance by a licensed technician",
+     "every_months": 1,
+     "basis": "ΚΥΑ Φ.Α/9.2/οικ.28425/2008"
+    },
+    {
+     "el": "Περιοδικός έλεγχος από φορέα ελέγχου και ανανέωση στο μητρώο ανελκυστήρων",
+     "en": "Periodic inspection by an inspection body and register renewal",
+     "every_months": 24,
+     "basis": "ΚΥΑ Φ.Α/9.2/οικ.28425/2008"
+    }
+   ]
+  },
+  {
+   "id": "fire",
+   "component": "fire_protection",
+   "el": "Πυροπροστασία (πυροσβεστήρες, ανίχνευση, φωτιστικά ασφαλείας)",
+   "en": "Fire protection (extinguishers, detection, emergency lights)",
+   "where": "common",
+   "storey": "all",
+   "tasks": [
+    {
+     "el": "Συντήρηση και επανέλεγχος πυροσβεστήρων",
+     "en": "Extinguisher service and re-check",
+     "every_months": 12,
+     "basis": "ΚΥΑ 618/43/2005"
+    },
+    {
+     "el": "Δοκιμή πίνακα πυρανίχνευσης και φωτιστικών ασφαλείας",
+     "en": "Test of the detection panel and emergency lights",
+     "every_months": 6,
+     "basis": "μελέτη ενεργητικής πυροπροστασίας"
+    }
+   ]
+  },
+  {
+   "id": "hvac",
+   "component": "hvac",
+   "el": "Θέρμανση – ψύξη – ζεστό νερό",
+   "en": "Heating – cooling – hot water",
+   "where": "private",
+   "storey": "apartments",
+   "tasks": [
+    {
+     "el": "Ετήσιο σέρβις μονάδων και έλεγχος καύσης/απόδοσης",
+     "en": "Annual service of the units and combustion/efficiency check",
+     "every_months": 12,
+     "basis": "μελέτη θέρμανσης / αερίου"
+    }
+   ]
+  },
+  {
+   "id": "roof",
+   "component": "roof",
+   "el": "Δώματα και στέγες (στεγάνωση, υδρορροές)",
+   "en": "Roofs and terraces (waterproofing, gutters)",
+   "where": "common",
+   "storey": "roof",
+   "tasks": [
+    {
+     "el": "Επιθεώρηση στεγάνωσης και καθαρισμός υδρορροών πριν τον χειμώνα",
+     "en": "Waterproofing check and gutter cleaning before winter",
+     "every_months": 12,
+     "basis": "καλή πρακτική"
+    }
+   ]
+  },
+  {
+   "id": "facade",
+   "component": "etics",
+   "el": "Όψεις και θερμοπρόσοψη",
+   "en": "Facades and external insulation",
+   "where": "common",
+   "storey": "all",
+   "tasks": [
+    {
+     "el": "Οπτική επιθεώρηση όψεων (ρωγμές, αποκολλήσεις)",
+     "en": "Visual inspection of the facades (cracks, detachment)",
+     "every_months": 60,
+     "basis": "καλή πρακτική"
+    }
+   ]
+  },
+  {
+   "id": "structure",
+   "component": "structure",
+   "el": "Φέρων οργανισμός",
+   "en": "Structure",
+   "where": "common",
+   "storey": "all",
+   "tasks": [
+    {
+     "el": "Επιθεώρηση από μηχανικό (και μετά από κάθε σημαντικό σεισμό)",
+     "en": "Inspection by an engineer (and after every significant earthquake)",
+     "every_months": 120,
+     "basis": "καλή πρακτική"
+    }
+   ]
+  },
+  {
+   "id": "plumbing",
+   "component": "plumbing",
+   "el": "Ύδρευση – αποχέτευση (αντλίες υπογείου, φρεάτια)",
+   "en": "Water supply – drainage (basement pumps, manholes)",
+   "where": "common",
+   "storey": "basement",
+   "tasks": [
+    {
+     "el": "Έλεγχος αντλιών λυμάτων/ομβρίων υπογείου",
+     "en": "Check of the basement sewage/storm-water pumps",
+     "every_months": 6,
+     "basis": "μελέτη αποχέτευσης"
+    },
+    {
+     "el": "Καθαρισμός φρεατίων",
+     "en": "Manhole cleaning",
+     "every_months": 12,
+     "basis": "καλή πρακτική"
+    }
+   ]
+  },
+  {
+   "id": "electrical",
+   "component": "electrical",
+   "el": "Ηλεκτρολογικά κοινοχρήστων (πίνακες, φωτισμός, θυροτηλέφωνα)",
+   "en": "Common electrical (panels, lighting, door phones)",
+   "where": "common",
+   "storey": "all",
+   "tasks": [
+    {
+     "el": "Έλεγχος πινάκων και γειώσεων",
+     "en": "Check of panels and earthing",
+     "every_months": 12,
+     "basis": "ΕΛΟΤ HD 384"
+    }
+   ]
+  },
+  {
+   "id": "windows",
+   "component": "windows",
+   "el": "Κουφώματα",
+   "en": "Windows and doors",
+   "where": "private",
+   "storey": "apartments",
+   "tasks": [
+    {
+     "el": "Λίπανση μηχανισμών και έλεγχος στεγανοποίησης",
+     "en": "Lubrication of the hardware and seal check",
+     "every_months": 12,
+     "basis": "οδηγίες κατασκευαστή"
+    }
+   ]
+  },
+  {
+   "id": "garden",
+   "component": "site",
+   "el": "Κήπος και περιβάλλων χώρος",
+   "en": "Garden and site",
+   "where": "common",
+   "storey": "ground",
+   "tasks": [
+    {
+     "el": "Κηπουρική συντήρηση και έλεγχος άρδευσης",
+     "en": "Gardening and irrigation check",
+     "every_months": 1,
+     "basis": "καλή πρακτική"
+    }
+   ]
+  },
+  {
+   "id": "timber",
+   "component": "timber",
+   "el": "Ξύλινες επενδύσεις, ζαρντινιέρες και πόρτες περίφραξης",
+   "en": "Timber cladding, planters and fence gates",
+   "where": "common",
+   "storey": "all",
+   "tasks": [
+    {
+     "el": "Λάδωμα/βερνίκι ξύλινων επιφανειών",
+     "en": "Oiling / varnishing of timber surfaces",
+     "every_months": 24
+    },
+    {
+     "el": "Έλεγχος στεγάνωσης και αποστράγγισης ζαρντινιέρων, κλάδεμα",
+     "en": "Check planter waterproofing and drainage, pruning",
+     "every_months": 6
+    },
+    {
+     "el": "Συντήρηση μηχανισμού συρόμενης πόρτας γκαράζ",
+     "en": "Service of the sliding garage gate drive",
+     "every_months": 12
+    }
+   ]
+  }
+ ]
+}
