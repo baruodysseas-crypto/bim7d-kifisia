@@ -1,0 +1,14 @@
+# Run the 7D-BIM tool locally in Docker (same image as the online copy):
+#   docker compose up --build      ->  http://localhost:8000
+# Project data are kept in the named volume "bim7d-projects" between restarts.
+services:
+  bim7d:
+    build: .
+    image: bim7d-kifisia
+    ports:
+      - "8000:8000"
+    volumes:
+      - bim7d-projects:/app/projects
+    restart: unless-stopped
+volumes:
+  bim7d-projects:

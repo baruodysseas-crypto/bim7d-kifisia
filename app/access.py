@@ -1,6 +1,8 @@
 """Password gate for the hosted (online) copy of the tool.
 
-Active only when the environment variable BIM7D_PASSWORD is set (e.g. on the hosting service).
+Optional. Active only when the environment variable BIM7D_ACCESS_PASSWORD is set.
+The public online copy runs without it (anyone with the link can use the app);
+set the variable on the hosting service to require a password again.
 Run locally with start.bat / start.sh, the variable is not set and nothing changes.
 After a correct password the browser keeps a signed cookie for 30 days.
 """
@@ -22,7 +24,7 @@ OPEN_PATHS = {"/login", "/logout", "/healthz", "/favicon.ico"}
 
 
 def password() -> str:
-    return os.environ.get("BIM7D_PASSWORD", "")
+    return os.environ.get("BIM7D_ACCESS_PASSWORD", "")
 
 
 def enabled() -> bool:

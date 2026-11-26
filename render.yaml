@@ -1,5 +1,6 @@
 # Render Blueprint: one free web service built from the Dockerfile.
-# The password is entered once in the Render dashboard (never stored in this repository).
+# The app is public. To require a password, add the environment variable
+# BIM7D_ACCESS_PASSWORD in the Render dashboard (never store it in this repository).
 services:
   - type: web
     name: bim7d-kifisia
@@ -8,6 +9,3 @@ services:
     region: frankfurt
     healthCheckPath: /healthz
     autoDeploy: true
-    envVars:
-      - key: BIM7D_PASSWORD
-        sync: false
