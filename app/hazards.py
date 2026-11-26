@@ -273,6 +273,37 @@ def seismic(project: dict[str, Any], cost_res: dict[str, Any], params: dict[str,
             "model": "Ambraseys et al. 1996 (PGA) → lognormal fragility curves by code level; cross-check: Wald et al. 1999 intensity + Lagomarsino–Giovinazzi LM1"}
 
 
+def historical_replay(project: dict[str, Any], cost_res: dict[str, Any], sq: dict[str, Any] | None, n: int = 5) -> dict[str, Any] | None:
+    """Replay recorded earthquakes on THIS building: what damage each would cause if it happened again today.
+    Two lists from the site catalogue (USGS): the n largest by magnitude and the n with the strongest shaking at the site.
+    Same chain as the 7D scenarios: Ambraseys et al. (1996) median PGA at the event's distance → fragility of the building."""
+    ev = (sq or {}).get("events") or []
+    if not ev:
+        return None
+
+    def d_eff(e: dict[str, Any]) -> float:
+        dep = float(e.get("depth_km") or 0)
+        return math.hypot(e["dist_km"], dep) if dep > 30.0 else float(e["dist_km"])
+
+    def replay(e: dict[str, Any]) -> dict[str, Any]:
+        r = seismic(project, cost_res, {"Ms": e["mag"], "distance_km": d_eff(e)})
+        dist = r["distribution"]
+        return {"time": e["time"], "mag": e["mag"], "dist_km": e["dist_km"], "depth_km": e.get("depth_km"), "place": e.get("place", ""),
+                "lat": e.get("lat"), "lon": e.get("lon"), "pga_g": r["pga_g"], "pga_over_design": r["pga_over_design"], "mmi": r["intensity_mmi"],
+                "mean_grade": r["mean_grade"], "grade": int(max(range(6), key=lambda k: dist[k])), "distribution": dist,
+                "p_d3plus": r["p_d3plus"], "p_d4plus": round(sum(dist[4:]), 4), "loss_eur": r["loss_eur"], "loss_ratio": r["loss_ratio"],
+                "downtime_days": r["downtime_days"]}
+
+    largest = sorted(ev, key=lambda e: (-e["mag"], -(e.get("pga_g") or 0)))[:n]
+    big = [e for e in ev if e["mag"] >= 5.0] or ev                       # small near-by shocks give short, harmless peaks
+    strongest = sorted(big, key=lambda e: -(e.get("pga_g") or 0))[:n]
+    return {"largest": [replay(e) for e in largest], "strongest": [replay(e) for e in strongest],
+            "grades_el": ["Καμία βλάβη", "Αμελητέα (D1)", "Μέτρια (D2)", "Σημαντική (D3)", "Πολύ βαριά (D4)", "Κατάρρευση (D5)"],
+            "grades_en": ["None", "Slight (D1)", "Moderate (D2)", "Substantial (D3)", "Very heavy (D4)", "Collapse (D5)"],
+            "note_el": "Ο κάθε καταγεγραμμένος σεισμός «ξαναπαίζεται» σήμερα πάνω στο συγκεκριμένο κτίριο: διάμεση επιτάχυνση στη θέση (Ambraseys et al. 1996) για την πραγματική απόσταση του επικέντρου και καμπύλες τρωτότητας του κτιρίου από τη στατική μελέτη. Τα μεγέθη των παλαιών σεισμών (πριν το ~1960) έχουν μεγάλη αβεβαιότητα.",
+            "note_en": "Each recorded earthquake is replayed today on this building: median site acceleration (Ambraseys et al. 1996) at the actual epicentral distance and the building's fragility curves from its static study. Magnitudes of old events (before ~1960) are highly uncertain."}
+
+
 def seismic_all(project: dict[str, Any], cost_res: dict[str, Any], params: dict[str, Any] | None = None) -> dict[str, Any]:
     params = params or {}
     hz = load()

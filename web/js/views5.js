@@ -113,11 +113,38 @@ export async function siteView(root) {
     if (hs) box.append(h("div", { class: "card", style: { background: "#fbfaf7", marginTop: "10px" } },
       h("b", {}, T("Αν ξανασυνέβαινε ο σεισμός με την ισχυρότερη επίδραση στη θέση", "If the earthquake with the strongest effect at the site happened again")),
       h("p", {}, `M ${fmt(hs.event.mag, 1)} · ${hs.event.time} · ${fmt(hs.event.dist_km)} km → PGA ${g3(hs.pga_g)} · MMI ${fmt(hs.mmi, 1)} · ${T("μέσος βαθμός βλάβης", "mean damage grade")} ${fmt(hs.mean_grade, 2)} · ${T("ζημιά", "loss")} ${eur(hs.loss_eur)} (${fmt((hs.loss_ratio || 0) * 100, 1)}% ${T("της αξίας αντικατάστασης", "of replacement value")}) · ${T("διακοπή χρήσης", "downtime")} ~${fmt(hs.downtime_days)} ${T("ημέρες", "days")}`)));
+    if (R.historical_replay) box.append(replayCard(R.historical_replay));
     box.append(h("details", {}, h("summary", {}, T("Οι 15 σεισμοί με τη μεγαλύτερη επίδραση στη θέση", "The 15 earthquakes with the strongest effect at the site")),
       h("table", {}, h("thead", {}, h("tr", {}, h("th", {}, T("Ημερομηνία", "Date")), h("th", { class: "n" }, "M"), h("th", { class: "n" }, T("απόσταση", "distance")), h("th", { class: "n" }, T("βάθος", "depth")), h("th", { class: "n" }, "PGA"), h("th", { class: "n" }, "MMI"), h("th", {}, T("Περιοχή", "Place")))),
         h("tbody", {}, s.top_site.map((e) => h("tr", {}, h("td", {}, e.url ? h("a", { href: e.url, target: "_blank" }, e.time) : e.time), h("td", { class: "n" }, fmt(e.mag, 1)), h("td", { class: "n" }, fmt(e.dist_km) + " km"), h("td", { class: "n" }, fmt(e.depth_km) + " km"), h("td", { class: "n" }, g3(e.pga_g)), h("td", { class: "n" }, fmt(e.mmi_site, 1)), h("td", { class: "small" }, e.place)))))),
       h("p", { class: "small mutedt" }, `${s.source} · ${T("λήψη", "fetched")} ${when(s.fetched)} · ${s.model}`));
     return box;
+  }
+
+  // what the recorded earthquakes would do to THIS building if they happened again today
+  function replayCard(hr) {
+    const G = S.lang === "el" ? hr.grades_el : hr.grades_en;
+    const col = ["#7a7974", "#2a78d6", "#eda100", "#eb6834", "#e34948", "#a1181c"];
+    const chip = (e) => { const k = Math.min(5, Math.round(e.mean_grade)); return h("span", { style: { display: "inline-block", padding: "1px 8px", borderRadius: "10px", border: `1px solid ${col[k]}`, color: "#2b2a27", fontSize: "12px", whiteSpace: "nowrap" } }, h("span", { style: { display: "inline-block", width: "8px", height: "8px", borderRadius: "4px", background: col[k], marginRight: "5px" } }), G[k]); };
+    const table = (rows) => h("table", {}, h("thead", {}, h("tr", {}, h("th", {}, "#"), h("th", {}, T("Ημερομηνία", "Date")), h("th", { class: "n" }, "M"), h("th", { class: "n" }, T("απόσταση", "distance")), h("th", {}, T("Περιοχή", "Place")),
+        h("th", { class: "n" }, T("PGA στο έργο", "PGA at site")), h("th", { class: "n" }, "MMI"), h("th", {}, T("Βλάβη κτιρίου", "Building damage")), h("th", { class: "n" }, T("πιθαν. D3+", "prob. D3+")), h("th", { class: "n" }, T("ζημιά", "loss")), h("th", { class: "n" }, T("διακοπή χρήσης", "downtime")))),
+      h("tbody", {}, rows.map((e, i) => h("tr", {}, h("td", {}, String(i + 1)), h("td", {}, e.time), h("td", { class: "n" }, fmt(e.mag, 1)), h("td", { class: "n" }, fmt(e.dist_km) + " km"), h("td", { class: "small" }, e.place),
+        h("td", { class: "n" }, g3(e.pga_g)), h("td", { class: "n" }, fmt(e.mmi, 1)), h("td", {}, chip(e)), h("td", { class: "n" }, fmt(e.p_d3plus * 100, 1) + "%"),
+        h("td", { class: "n" }, `${eur(e.loss_eur)} (${fmt(e.loss_ratio * 100, 1)}%)`), h("td", { class: "n" }, `~${fmt(e.downtime_days)} ${T("ημ.", "d")}`)))));
+    const L = hr.largest || [], Sx = hr.strongest || [];
+    const dmin = Math.min(...L.map((e) => e.dist_km)), worst = Sx[0];
+    const msg = T(`Οι 5 μεγαλύτεροι σεισμοί της περιοχής έγιναν όλοι μακριά από το έργο (από ${fmt(dmin)} km και πάνω), γι' αυτό ακόμη και με M ${fmt(L[0] && L[0].mag, 1)} το κτίριο θα είχε ελάχιστη ή καμία βλάβη. `
+        + (worst ? `Πιο επικίνδυνος για το οικόπεδο είναι ένας μικρότερος αλλά κοντινός σεισμός: M ${fmt(worst.mag, 1)} το ${worst.time.slice(0, 4)} στα ${fmt(worst.dist_km)} km, που σήμερα θα προκαλούσε ζημιά περίπου ${eur(worst.loss_eur)} (${fmt(worst.loss_ratio * 100, 1)}% της αξίας)${worst.p_d4plus < 0.01 ? " χωρίς ουσιαστικό κίνδυνο κατάρρευσης" : `, με πιθανότητα πολύ βαριάς βλάβης ${fmt(worst.p_d4plus * 100, 1)}%`}. ` : "")
+        + "Η απόσταση μετράει περισσότερο από τα Ρίχτερ.",
+      `The 5 largest earthquakes of the area all happened far from the site (${fmt(dmin)} km or more), so even with M ${fmt(L[0] && L[0].mag, 1)} the building would have little or no damage. `
+        + (worst ? `More dangerous for the site is a smaller but close event: M ${fmt(worst.mag, 1)} in ${worst.time.slice(0, 4)} at ${fmt(worst.dist_km)} km, which today would cause about ${eur(worst.loss_eur)} of damage (${fmt(worst.loss_ratio * 100, 1)}% of the value)${worst.p_d4plus < 0.01 ? " with no real risk of collapse" : `, with a ${fmt(worst.p_d4plus * 100, 1)}% chance of very heavy damage`}. ` : "")
+        + "Distance matters more than magnitude.");
+    return h("div", { class: "card", style: { marginTop: "10px" } },
+      h("h3", { style: { marginTop: 0 } }, T("Αν ξαναγίνονταν σήμερα οι ιστορικοί σεισμοί", "If the historical earthquakes happened again today")),
+      h("p", {}, msg),
+      h("h4", {}, T("Οι 5 μεγαλύτεροι καταγεγραμμένοι σεισμοί (μέγεθος)", "The 5 largest recorded earthquakes (magnitude)")), table(L),
+      h("h4", {}, T("Οι 5 σεισμοί με την ισχυρότερη επίδραση στο οικόπεδο", "The 5 earthquakes with the strongest effect at the site")), table(Sx),
+      h("p", { class: "small mutedt" }, (S.lang === "el" ? hr.note_el : hr.note_en) + T(" D3+ = σημαντική βλάβη ή χειρότερη.", " D3+ = substantial damage or worse.")));
   }
 
   function quakeMap(s) {

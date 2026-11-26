@@ -662,6 +662,7 @@ def get_live(pid: str, light: bool = False) -> dict[str, Any]:
         r = hazards.seismic(p, c, {"Ms": ev["mag"], "distance_km": ev.get("d_eff_km", ev["dist_km"])})
         out["historical_scenario"] = {"event": ev, "pga_g": r.get("pga_g"), "mmi": r.get("intensity_mmi"), "loss_eur": r.get("loss_eur"),
                                       "mean_grade": r.get("mean_grade"), "loss_ratio": r.get("loss_ratio"), "downtime_days": r.get("downtime_days"), "p_d3plus": r.get("p_d3plus")}
+        out["historical_replay"] = hazards.historical_replay(p, c, lv["seismic"])
     return out
 
 

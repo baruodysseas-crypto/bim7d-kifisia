@@ -777,6 +777,16 @@ def build(project: dict[str, Any], pstate: dict[str, Any], data: dict[str, Any],
                 d.table([T("Σενάριο 7D", "7D scenario"), "Ms/km", "PGA g", T("Ετήσια πιθ. – παραδοχή", "Annual prob. – assumed"), T("– από ιστορικό", "– from history"), T("Περ. επαναφοράς (έτη)", "Return period (y)")], rows, [30, 18, 18, 34, 30, 30], align_right_from=1)
                 d.P(T("Στους κινδύνους του 7D χρησιμοποιούνται " + ("οι πιθανότητες από το ιστορικό." if use.get("seismic_rates") else "οι παραδοχές (οι πιθανότητες από το ιστορικό δίνονται για σύγκριση)."),
                       "The 7D risks use " + ("the probabilities from history." if use.get("seismic_rates") else "the assumptions (the probabilities from history are given for comparison).")), "small")
+            hr = hz_mod.historical_replay(project, cost, sq)
+            if hr:
+                G = hr["grades_el"] if lang == "el" else hr["grades_en"]
+                d.H2("Αν ξαναγίνονταν σήμερα οι ιστορικοί σεισμοί", "If the historical earthquakes happened again today")
+                for key, title in (("largest", T("Οι 5 μεγαλύτεροι καταγεγραμμένοι σεισμοί", "The 5 largest recorded earthquakes")),
+                                   ("strongest", T("Οι 5 σεισμοί με την ισχυρότερη επίδραση στο οικόπεδο", "The 5 earthquakes with the strongest effect at the site"))):
+                    d.P("<b>" + title + "</b>")
+                    rows = [[e["time"], G[min(5, round(e['mean_grade']))], f"{e['mag']:.1f}", f"{e['dist_km']:.0f}", f"{e['pga_g']:.3f}", f"{e['p_d3plus'] * 100:.1f}%", F(e["loss_eur"]) + " €", F(e["downtime_days"])] for e in hr[key]]
+                    d.table([T("Ημερομηνία", "Date"), T("Βλάβη κτιρίου", "Building damage"), "M", T("Απόσταση km", "Distance km"), "PGA g", "P(D3+)", T("Ζημιά", "Loss"), T("Ημέρες διακοπής", "Downtime days")], rows, [22, 34, 12, 20, 16, 16, 26, 20], align_right_from=2)
+                d.P(hr["note_el"] if lang == "el" else hr["note_en"], "small")
         if cl and cl.get("years"):
             m_, tr = cl["mean"], cl["trend_per_decade"]
             d.H2("Ιστορικό κλίματος της θέσης", "Climate history of the site")
