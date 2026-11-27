@@ -25,7 +25,7 @@ from shapely.ops import unary_union
 from . import fm, ingest, structural
 
 DATA = Path(__file__).parent / "data"
-DEMO_REV = 21
+DEMO_REV = 23
 
 # levels relative to the ground floor top (drawings: -2.00 / +1.00 / +4.05 / +7.10 / +10.30 / ridge +13.50)
 LEVELS = {"basement": -3.00, "ground": 0.0, "first": 3.05, "second": 6.10, "attic": 9.30, "roof": 12.50}
@@ -488,14 +488,17 @@ def _core_stair_steps(z0: float, z1: float):
     xl, xr = xm - SPLIT_HALF, xm + SPLIT_HALF                       # faces of the wall between the two flights
     up = [(_rect(xa, ya + k * TREAD, xl, ya + (k + 1) * TREAD), z0 + (k + 1) * h) for k in range(8)]
     land = [(_rect(xa, yt, xm, CORE_Y[1]), z0 + 9 * h), (_rect(xm, yt, xb, CORE_Y[1]), z0 + 10 * h)]
-    down = [(_rect(xr, yt - (k + 1) * TREAD, xb, yt - k * TREAD), z0 + (11 + k) * h) for k in range(6)]
-    return up, land, down, h
+    # return flight: 6 treads from the landing up to the ground-floor slab level (last tread flush with z1, never above it)
+    z_land = z0 + 10 * h
+    hd = (z1 - z_land) / 6
+    down = [(_rect(xr, yt - (k + 1) * TREAD, xb, yt - k * TREAD), z_land + (k + 1) * hd) for k in range(6)]
+    return up, land, down, h, hd
 
 
 def _core_stair(z0: float, z1: float):
-    up, land, down, h = _core_stair_steps(z0, z1)
-    mk = lambda st: trimesh.util.concatenate([_tread_solid(p, t, z0, h) for p, t in st])
-    return mk(up), mk(land), mk(down)
+    up, land, down, h, hd = _core_stair_steps(z0, z1)
+    mk = lambda st, r: trimesh.util.concatenate([_tread_solid(p, t, z0, r) for p, t in st])
+    return mk(up, h), mk(land, h), mk(down, hd)
 
 
 PRIV_UP_Y, PRIV_DN_Y = (15.40, 16.40), (14.39, 15.30)          # rows of the private stair (west copy; the east one is mirrored)
@@ -557,14 +560,14 @@ def stair_undersides(st: str) -> list[tuple[float, float, float, float, float]]:
     i = STOREY_ORDER.index(st)
     if i + 1 < len(STOREY_ORDER):
         z0, z1 = L[st], L[STOREY_ORDER[i + 1]]
-        up, land, down, h = _core_stair_steps(z0, z1)
-        sets = [up + land + down]
+        up, land, down, h, hd = _core_stair_steps(z0, z1)
+        sets = [(up + land, h), (down, hd)]
         if st == "basement":
-            sets += [_private_stair_steps(z0, z1, s)[0] for s in (1, -1)]
-        for steps in sets:
+            sets += [(_private_stair_steps(z0, z1, s)[0], h) for s in (1, -1)]
+        for steps, r in sets:
             for pts, top in steps:
                 xs, ys = [p[0] for p in pts], [p[1] for p in pts]
-                out.append((min(xs), min(ys), max(xs), max(ys), max(z0, top - h - WAIST)))
+                out.append((min(xs), min(ys), max(xs), max(ys), max(z0, top - r - WAIST)))
     return out
 
 
@@ -974,7 +977,12 @@ def _interior(add, st: str, z_floor: float, z_next: float, meta: dict) -> None:
         else:
             x0, x1, y0, y1 = c_w - t_w / 2, c_w + t_w / 2, my - ow / 2, my + ow / 2
         zt = top_at(x0, x1, (y0 + y1) / 2)
-        z_h = z_floor + DOOR_H
+        # a door under a stair: its leaf stops at the underside of the stair above (landing or flight), with a 5 cm clearance
+        h_door = DOOR_H
+        for ax0, ay0, ax1, ay1, und in stair_undersides(st):
+            if ax0 < x1 and ax1 > x0 and ay0 < y1 and ay1 > y0:
+                h_door = min(h_door, round(und - z_floor - 0.05, 3))
+        z_h = z_floor + h_door
         lh = LINTEL_H_INT
         # leaf (closed) and 3-sided frame
         fr = 0.04
@@ -987,7 +995,7 @@ def _interior(add, st: str, z_floor: float, z_next: float, meta: dict) -> None:
                      _box_mesh(x0, y0 - fr, z_floor, x1, y0, z_h), _box_mesh(x0, y1, z_floor, x1, y1 + fr, z_h), _box_mesh(x0, y0 - fr, z_h - fr, x1, y1 + fr, z_h)]
         apt = dr["type"] == "apartment_entrance"
         extra.append((trimesh.util.concatenate(parts), ("Apartment entrance door" if apt else "Interior door") + f" {st} {k + 1}", "door_@",
-                      {"opening": "apartment_entrance" if apt else "interior_door", "w_m": round(r, 3), "h_m": DOOR_H, "qty_override": {"area_m2": round(r * DOOR_H, 3)}}))
+                      {"opening": "apartment_entrance" if apt else "interior_door", "w_m": round(r, 3), "h_m": h_door, "qty_override": {"area_m2": round(r * h_door, 3)}}))
         if zt - z_h > 0.02:
             lh = min(lh, zt - z_h)
             L = ow + 2 * LINTEL_BEARING
