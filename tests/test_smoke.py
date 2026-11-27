@@ -345,7 +345,7 @@ def test_openings_cut_into_walls_and_priced():
     lint = [e for e in els if (e.get("props") or {}).get("lintel")]
     assert len(lint) > 80 and all(e["kind"] == "beam" and e["qty"]["length_m"] > e["props"]["span_m"] for e in lint)      # bearing on both sides
     # every element lies on a real storey; walls are watertight bodies with the openings cut out
-    assert all(e["storey"] for e in els if e["kind"] in ("window", "door", "wall"))
+    assert all(e["storey"] for e in els if e["kind"] in ("window", "door", "wall") and not (e.get("props") or {}).get("landscape"))   # garden items belong to the plot
     walls = [e for e in els if e["kind"] == "wall" and not (e.get("props") or {}).get("internal") and not (e.get("props") or {}).get("retaining")
              and not (e.get("props") or {}).get("landscape")]                  # surroundings have their own cost lines
     gross = sum(e["qty"]["length_m"] * e["qty"]["height_m"] for e in walls)

@@ -25,7 +25,7 @@ from shapely.ops import unary_union
 from . import fm, ingest, structural
 
 DATA = Path(__file__).parent / "data"
-DEMO_REV = 12
+DEMO_REV = 13
 
 # levels relative to the ground floor top (drawings: -2.00 / +1.00 / +4.05 / +7.10 / +10.30 / ridge +13.50)
 LEVELS = {"basement": -3.00, "ground": 0.0, "first": 3.05, "second": 6.10, "attic": 9.30, "roof": 12.50}
@@ -323,7 +323,9 @@ def build_parts(members: dict, windows: list[dict]) -> tuple[list[dict], dict]:
             prev_st = STOREY_ORDER[si - 1]
             parts_poly = [prev, st_poly] + [semi[k] for k in (prev_st, st) if k in semi] + ([balc[st]] if st in balc else [])
             slab = unary_union(parts_poly)
-            add(f"Floor slab {st}", f"slab_{st}", _slab_mesh(slab, z_floor - SLAB_T, z_floor), qty_override={"perimeter_m": round(slab.length, 3)})
+            holes = [sbox(*r) for r in STAIR_HOLE + [LIFT_SHAFT]] + ([sbox(*r) for r in _private_stair_holes()] if st == "ground" else [])
+            slab_cut = slab.difference(unary_union(holes))
+            add(f"Floor slab {st}", f"slab_{st}", _slab_mesh(slab_cut, z_floor - SLAB_T, z_floor), qty_override={"perimeter_m": round(slab.length, 3)})
         # columns
         h_col = z_next - z_floor - SLAB_T
         if FR:
@@ -346,10 +348,8 @@ def build_parts(members: dict, windows: list[dict]) -> tuple[list[dict], dict]:
                     section=c.get("section"), rebar=c.get("long"), stirrups=f"Φ{c.get('stirrup_d')}/{c.get('stirrup_s_cm')}", source=lvl["sheet"],
                     perimeter_m=round(P.length, 3), qty_override={"volume_m3": round(float(qm.volume), 4), "surface_m2": round(float(qm.area), 3), "height_m": round(h_c, 4)})
                 if st == "basement" and not raft.buffer(0.05).contains(Point(cx, cy)):
-                    # column outside the raft (light wells, ramp): it needs its own pad footing, otherwise it would stand on nothing
-                    fx0, fy0, fx1, fy1 = P.buffer(0.30, join_style=2).bounds
-                    add(f"Pad footing under {c['id']}", "foundation", _box_mesh(fx0, fy0, z_floor - 0.50, fx1, fy1, z_floor), added_support=True,
-                        note="Πέδιλο που προστέθηκε στο μοντέλο ώστε το υποστύλωμα έξω από τη γενική κοιτόστρωση να έχει θεμελίωση (δεν φαίνεται στα σχέδια).")
+                    # columns of the cours anglaises (light wells, A.01): they rise to the garden and stand on the raft extension below the well
+                    parts[-1]["mesh"] = _slab_mesh(P, z_floor, CA_TOP)
             for bm in lvl["beams"]:
                 a, b = bm["a"], bm["b"]
                 z_top = min(_roof_under(*a), _roof_under(*b)) if st == "attic" else z_floor + h_col
@@ -373,7 +373,9 @@ def build_parts(members: dict, windows: list[dict]) -> tuple[list[dict], dict]:
             z_top = min(_roof_under(*a), _roof_under(*b)) if st == "attic" else z_floor + h_col
             add(f"Beam {bm['id']} {st}", f"beam_{st}", _beam_mesh(a, b, z_top, bm["b_cm"] / 100, bm["h_cm"] / 100 - SLAB_T, top=z_top, drop=True))
         # external walls (masonry + 10 cm insulation) or retaining walls in the basement; the openings of the plans are cut into them
-        wall_h = (KNEE if st == "attic" else z_next - z_floor - SLAB_T - 0.15)
+        # basement: reinforced-concrete walls (τοιχεία) 25 cm up to the slab; upper floors: brick infill up to the beams
+        wall_h = (KNEE if st == "attic" else (z_next - z_floor - SLAB_T if st == "basement" else z_next - z_floor - SLAB_T - 0.15))
+        wall_t = 0.25 if st == "basement" else 0.30
         total_len = 0.0
         ext_ops = [o for o in OPENINGS["ext"] if o["storey"] == st]
         placed: set[int] = set()
@@ -381,12 +383,14 @@ def build_parts(members: dict, windows: list[dict]) -> tuple[list[dict], dict]:
             total_len += math.dist(a, b)
             nm = "Retaining wall" if st == "basement" else "External wall"
             gable = st == "attic" and abs(b[0] - a[0]) > abs(b[1] - a[1])          # attic walls along x carry the gable
-            asm = _wall_assembly(a, b, st_poly, z_floor, wall_h, 0.30, ext_ops, placed, _gable_top if gable else None)
+            asm = _wall_assembly(a, b, st_poly, z_floor, wall_h, wall_t, ext_ops, placed, _gable_top if gable else None)
             add(f"{nm} {st}", f"{'retwall' if st == 'basement' else 'wall'}_{st}", asm["wall"])
             for (m, nme, lay, props) in asm["lintels"] + asm["glazing"]:
                 add(nme, lay.replace("@", st), m, **props)
         skipped = [i for i, o in enumerate(OPENINGS["ext"]) if o["storey"] == st and i not in placed and o in ext_ops]
         meta.setdefault("openings_unplaced", []).extend(f"{st}:{OPENINGS['ext'][i]['type']}@{OPENINGS['ext'][i]['c']}" for i in skipped)
+        if st == "basement" and FR:
+            _cours_anglaises(add, FR, z_floor)
         # interior partitions and doors of the plan
         _interior(add, st, z_floor, z_next, meta)
         meta["wall_lengths"][st] = round(total_len, 2)
@@ -429,15 +433,97 @@ def build_parts(members: dict, windows: list[dict]) -> tuple[list[dict], dict]:
             roof_area += slope * (y1 - y0)
     meta["roof_slope_area_m2"] = round(roof_area, 2)
 
-    # --- stairs in the core (two flights + landing per storey)
+    # --- common stair of the core: U-shaped, 17 risers per floor (plans A.01/A.02); the lift shaft beside it
     for si, st in enumerate(STOREY_ORDER[:-1]):
         z0, z1 = L[st], L[STOREY_ORDER[si + 1]]
-        zm = (z0 + z1) / 2
-        t = 0.26                                                   # equivalent thickness of a concrete stair flight (waist + steps)
-        add(f"Stair flight {st} A", f"stair_{st}", _stair_prism([(7.2, z0), (10.2, zm), (10.2, zm - t), (7.2, z0 - t)], 7.4, 8.6))
-        add(f"Stair flight {st} B", f"stair_{st}", _stair_prism([(10.2, zm), (7.2, z1), (7.2, z1 - t), (10.2, zm - t)], 9.7, 10.9))
-        add(f"Stair landing {st}", f"stair_{st}", _box_mesh(7.4, 10.2, zm - 0.2, 10.9, 11.6, zm))
+        fa, land, fb = _core_stair(z0, z1)
+        add(f"Stair flight {st} A", f"stair_{st}", fa)
+        add(f"Stair landing {st}", f"stair_{st}", land)
+        add(f"Stair flight {st} B", f"stair_{st}", fb)
+    x0, y0, x1, y1 = LIFT_SHAFT
+    add("Elevator car", "furniture_lift", _box_mesh(x0 + 0.08, y0 + 0.10, L["ground"] + 0.02, x1 - 0.08, y1 - 0.08, L["ground"] + 2.25), lift=True)
+    # --- private stairs from the basement storerooms up to the ground-floor maisonettes Δ1 and Δ2 (A.01/A.02)
+    for side, nm in ((1, "Δ1"), (-1, "Δ2")):
+        add(f"Private stair {nm} basement–ground", "stair_basement", _private_stair(L["basement"], L["ground"], side))
     return parts, meta
+
+
+# ---------------------------------------------------------------- core, lift, private stairs, cours anglaises (plans A.01/A.02, sheet Σ.02)
+CORE_X = (7.26, 9.40)               # common stair: clear width between the core walls
+CORE_Y = (9.78, 12.83)              # first riser … back wall of the core
+FLIGHT_SPLIT = 8.34                 # axis between the up-flight (west half) and the return flight (east half)
+TREAD = 0.28
+LIFT_SHAFT = (9.65, 11.14, 11.06, 12.85)      # clear shaft inside the Π-shaped wall K15 (1.40 m wide), door on the stair side
+STAIR_HOLE = [(7.26, 10.34, 9.40, 12.83), (7.26, 9.78, 8.34, 10.34)]   # slab opening over the stair (the arrival strip stays)
+CA_TOP = 0.0                        # cours anglaises: walls and columns up to the garden
+
+
+def _treads(boxes, z0, slab=0.18):
+    """Solid steps: each tread is a block from its top down by the waist depth (never under the floor it starts from)."""
+    return trimesh.util.concatenate([_box_mesh(x0, y0, max(z0, top - 0.20 - slab), x1, y1, top) for (x0, y0, x1, y1, top) in boxes])
+
+
+def _core_stair(z0: float, z1: float):
+    n = 17
+    h = (z1 - z0) / n
+    xa, xm, xb = CORE_X[0], FLIGHT_SPLIT, CORE_X[1]
+    ya, yt = CORE_Y[0], CORE_Y[0] + 8 * TREAD
+    up = [(xa, ya + k * TREAD, xm - 0.02, ya + (k + 1) * TREAD, z0 + (k + 1) * h) for k in range(8)]                 # steps 1–8 (north)
+    land = [(xa, yt, xm, CORE_Y[1], z0 + 9 * h), (xm, yt, xb, CORE_Y[1], z0 + 10 * h)]                                 # steps 9–10 at the back wall
+    down = [(xm + 0.02, yt - (k + 1) * TREAD, xb, yt - k * TREAD, z0 + (11 + k) * h) for k in range(6)]                # steps 11–16 (south)
+    return _treads(up, z0), _treads(land, z0), _treads(down, z0)
+
+
+def _private_stair_boxes(z0: float, z1: float, side: int):
+    """Stair Δ1 (side=1, west) or Δ2 (side=-1, mirrored): 8 steps eastwards along the back of the boiler room, three winders at the
+    central wall, 4 steps back westwards and the arrival on the ground floor – 17 risers."""
+    h = (z1 - z0) / 17
+    X = (lambda x: x) if side == 1 else (lambda x: W - x)
+    up_y, dn_y = (15.40, 16.40), (14.39, 15.30)
+    xs, xw0, xw1, t = 6.075, 8.235, 9.05, 0.27
+    raw = [(xs + k * t, up_y[0], xs + (k + 1) * t, up_y[1], z0 + (k + 1) * h) for k in range(8)]
+    raw += [(xw0, 15.90, xw1, up_y[1], z0 + 9 * h), (xw0, up_y[0], xw1, 15.90, z0 + 10 * h),
+            (xw0, 14.85, xw1, up_y[0], z0 + 11 * h), (xw0, dn_y[0], xw1, 14.85, z0 + 12 * h)]
+    raw += [(xw0 - (k + 1) * t, dn_y[0], xw0 - k * t, dn_y[1], z0 + (13 + k) * h) for k in range(4)]
+    out = []
+    for (a, b, c, d, top) in raw:
+        p, q = sorted((X(a), X(c)))
+        out.append((p, b, q, d, top))
+    return out
+
+
+def _private_stair(z0, z1, side):
+    return _treads(_private_stair_boxes(z0, z1, side), z0)
+
+
+def _private_stair_holes():
+    out = []
+    for side in (1, -1):
+        for (x0, y0, x1, y1) in [(6.075, 15.30, 9.05, 16.40), (7.155, 14.39, 9.05, 15.30)]:
+            p, q = (x0, x1) if side == 1 else (W - x1, W - x0)
+            out.append((p, y0, q, y1))
+    return out
+
+
+def _cours_anglaises(add, FR, z_floor: float) -> None:
+    """Light wells in front of the basement windows (A.01): their RC walls (Σ.02) up to the garden and the raft extended under them."""
+    raft_ext = []
+    for w in FR["levels"]["basement"]["walls"]:
+        (ax, ay), (bx, by) = w["a"], w["b"]
+        if not (min(ay, by) > 20.3 or max(ax, bx) < 0.05):
+            continue                                        # walls on the building outline are drawn with the openings above
+        t = w["t_m"]
+        if abs(ay - by) < 1e-6:
+            m = _box_mesh(min(ax, bx), ay - t / 2, z_floor, max(ax, bx), ay + t / 2, CA_TOP)
+        else:
+            m = _box_mesh(ax - t / 2, min(ay, by), z_floor, ax + t / 2, max(ay, by), CA_TOP)
+        add("Cour anglaise wall", "retwall_basement", m, cour_anglaise=True)
+    for (x0, y0, x1, y1) in CA_PITS:
+        raft_ext.append(_box_mesh(x0, y0, z_floor - RAFT_T, x1, y1, z_floor))
+        add("Cour anglaise floor", "foundation", raft_ext[-1], cour_anglaise=True)
+
+
+CA_PITS = [(2.885, 20.35, 5.885, 21.745), (12.335, 20.35, 15.425, 21.745), (-1.385, 6.045, 0.0, 9.045)]
 
 
 _FRAME_CACHE: dict[str, Any] = {}
@@ -759,15 +845,29 @@ def _clip_convex(pts, x0=None, x1=None, y0=None, y1=None):
     return [tuple(c) for c in list(P.exterior.coords)[:-1]] if not P.is_empty and P.area > 0.01 else None
 
 
-REAL_RAMP = (18.25, 22.85, 15.60)            # ramp + landing of the real (Rhino) model: x from, x to, y end of the landing
+REAL_RAMP = (18.25, 22.85, 15.60)
+PLOT_X = (-3.2, 23.3)            # ramp + landing of the real (Rhino) model: x from, x to, y end of the landing
 
 
 def _real_site_plate() -> trimesh.Trimesh:
-    """Base plate under the real (Rhino) surroundings, with the opening of the basement ramp so that the sloping ramp
-    (street level → garage door) is visible instead of being covered by the plate."""
+    """Base plate under the real (Rhino) surroundings, open over the basement ramp (street level → garage door) and over the
+    cours anglaises, so that both are visible instead of being covered. Built from convex pieces (no triangulation engine)."""
     x0, x1, y1 = REAL_RAMP
-    pieces = [_clip_convex(PLOT, x1=x0), _clip_convex(PLOT, x0=x1), _clip_convex(PLOT, x0=x0, x1=x1, y0=y1)]
-    return trimesh.util.concatenate([_convex_plate(pc, -1.60, -1.30) for pc in pieces if pc])
+    holes = [(x0, -1e3, x1, y1)] + [(a, b, c, d) for (a, b, c, d) in CA_PITS]
+    xs = sorted({PLOT_X[0], PLOT_X[1], *[h[0] for h in holes], *[h[2] for h in holes]})
+    pieces = []
+    for xa, xb in zip(xs[:-1], xs[1:]):
+        if xb - xa < 1e-3:
+            continue
+        xm = (xa + xb) / 2
+        cut = sorted((h[1], h[3]) for h in holes if h[0] < xm < h[2])
+        ylo = -1e3
+        for (ha, hb) in cut + [(1e3, 1e3)]:
+            pc = _clip_convex(PLOT, x0=xa, x1=xb, y0=ylo, y1=ha)
+            if pc:
+                pieces.append(pc)
+            ylo = hb
+    return trimesh.util.concatenate([_convex_plate(pc, -1.60, -1.30) for pc in pieces])
 
 
 def site_plate() -> trimesh.Trimesh:
@@ -1027,6 +1127,8 @@ def build_project(project_id: str = "demo-kifisia") -> tuple[dict[str, Any], dic
     storeys = storeys_def()
     ingest.assign_storeys(elements, [{"id": s["id"], "elevation_m": s["elevation_m"]} for s in storeys])
     for e, p in zip(elements, parts):
+        if p["props"].get("rhino_layer") == "khpos" or p["layer"].startswith("land_site"):
+            e["storey"] = None                               # garden, fences and gates of the Rhino model belong to the plot, not to the basement
         if p["layer"].startswith("retwall"):
             e["material"] = "concrete"
             e["props"]["retaining"] = True                   # retaining walls are concrete
