@@ -25,7 +25,7 @@ from shapely.ops import unary_union
 from . import fm, ingest, structural
 
 DATA = Path(__file__).parent / "data"
-DEMO_REV = 23
+DEMO_REV = 25
 
 # levels relative to the ground floor top (drawings: -2.00 / +1.00 / +4.05 / +7.10 / +10.30 / ridge +13.50)
 LEVELS = {"basement": -3.00, "ground": 0.0, "first": 3.05, "second": 6.10, "attic": 9.30, "roof": 12.50}
@@ -1017,6 +1017,24 @@ def _interior(add, st: str, z_floor: float, z_next: float, meta: dict) -> None:
             # step top = underside + waist + riser: rebuild it from the step list
             zb = max(t for t in _step_tops_at(st, (x0 + x1) / 2, m))
             boxes.append(_box_mesh(x0, a, zb, x1, b_, top_flat))
+    if st == "basement":
+        # boiler room: brick wall from the soffit of the private stairs up to the ground-floor slab, so the stairs are closed
+        # off from the room below (user, 3D check) – along the inner edge of steps 12–16 (y 14.39) and between Δ1/Δ2 (x 9.05–9.25)
+        ye, tw = PRIV_DN_Y[0], 0.10
+        for side in (1, -1):
+            stp, h = _private_stair_steps(z_floor, z_next, side)
+            for pts, top in stp:
+                xs, ys = [q[0] for q in pts], [q[1] for q in pts]
+                zb = max(z_floor, top - h - WAIST)
+                if top_flat - zb < 0.05:
+                    continue
+                if abs(min(ys) - ye) < 0.02:
+                    boxes.append(_box_mesh(min(xs), ye - tw, zb, max(xs), ye, top_flat))
+                    face += (max(xs) - min(xs)) * (top_flat - zb)
+                if side == 1 and abs(max(xs) - PRIV_XE) < 0.02 and min(ys) < PRIV_UP_Y[0]:
+                    y0w, y1w = max(min(ys), ye - tw), min(max(ys), PRIV_UP_Y[0])
+                    boxes.append(_box_mesh(PRIV_XE, y0w, zb, W - PRIV_XE, y1w, top_flat))
+                    face += (y1w - y0w) * (top_flat - zb)
     if boxes:
         t_avg = float(np.mean(vol_t)) if vol_t else 0.1
         add(f"Internal walls {st}", f"intwall_{st}", trimesh.util.concatenate(boxes), internal=True,
