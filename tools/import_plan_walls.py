@@ -15,7 +15,7 @@ import ezdxf
 
 LIFT_CORNER = (9.40, 11.15)
 # DXF position of the lift wall (lower-left corner) of each storey's plan (from top to bottom of the drawing)
-ANCHORS = {"basement": (2687.244, 1928.19)}
+ANCHORS = {"basement": (2687.244, 1928.19), "ground": (2687.69, 1898.747)}
 
 
 def load(path):

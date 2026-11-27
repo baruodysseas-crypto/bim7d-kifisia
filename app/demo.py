@@ -25,7 +25,7 @@ from shapely.ops import unary_union
 from . import fm, ingest, structural
 
 DATA = Path(__file__).parent / "data"
-DEMO_REV = 25
+DEMO_REV = 26
 
 # levels relative to the ground floor top (drawings: -2.00 / +1.00 / +4.05 / +7.10 / +10.30 / ridge +13.50)
 LEVELS = {"basement": -3.00, "ground": 0.0, "first": 3.05, "second": 6.10, "attic": 9.30, "roof": 12.50}
@@ -441,7 +441,8 @@ def build_parts(members: dict, windows: list[dict]) -> tuple[list[dict], dict]:
         add(f"Stair landing {st}", f"stair_{st}", land)
         add(f"Stair flight {st} B", f"stair_{st}", fb)
     x0, y0, x1, y1 = LIFT_SHAFT
-    add("Elevator car", "furniture_lift", _box_mesh(x0 + 0.10, y0 + 0.12, L["basement"] + 0.02, x1 - 0.10, y1 - 0.10, L["basement"] + 2.30),
+    # the car rests at the main entrance level (ground floor); the shaft runs from the basement pit to the second floor
+    add("Elevator car", "furniture_lift", _box_mesh(x0 + 0.10, y0 + 0.12, L["ground"] + 0.02, x1 - 0.10, y1 - 0.10, L["ground"] + 2.30),
         lift=True, color="#8e99a3")
     xm = (x0 + x1) / 2
     for st in STOREY_ORDER:
