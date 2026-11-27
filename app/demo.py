@@ -25,7 +25,7 @@ from shapely.ops import unary_union
 from . import fm, ingest, structural
 
 DATA = Path(__file__).parent / "data"
-DEMO_REV = 20
+DEMO_REV = 21
 
 # levels relative to the ground floor top (drawings: -2.00 / +1.00 / +4.05 / +7.10 / +10.30 / ridge +13.50)
 LEVELS = {"basement": -3.00, "ground": 0.0, "first": 3.05, "second": 6.10, "attic": 9.30, "roof": 12.50}
@@ -456,12 +456,13 @@ def build_parts(members: dict, windows: list[dict]) -> tuple[list[dict], dict]:
 
 
 # ---------------------------------------------------------------- core, lift, private stairs, cours anglaises (plans A.01/A.02, sheet Σ.02)
-CORE_X = (7.26, 9.40)               # common stair: clear width between the core walls
+CORE_X = (7.30, 9.30)               # common stair: clear width between K14 and the lift wall (DXF, 2.15 m between axes)
 CORE_Y = (9.78, 12.83)              # first riser … back wall of the core
-FLIGHT_SPLIT = 8.34                 # axis between the up-flight (west half) and the return flight (east half)
+FLIGHT_SPLIT = 8.32                 # axis of the 8 cm wall between the up-flight (west) and the return flight (east)
+SPLIT_HALF = 0.04
 TREAD = 0.28
 LIFT_SHAFT = (9.65, 11.14, 11.06, 12.85)      # clear shaft inside the Π-shaped wall K15 (1.40 m wide), door on the stair side
-STAIR_HOLE = [(7.26, 10.34, 9.40, 12.83), (7.26, 9.78, 8.34, 10.34)]   # slab opening over the stair (the arrival strip stays)
+STAIR_HOLE = [(7.30, 10.34, 9.30, 12.83), (7.30, 9.78, 8.32, 10.34)]   # slab opening over the stair (the arrival strip stays)
 CA_TOP = 0.10                       # cours anglaises: walls and columns 10–15 cm above the garden (Rhino garden ≈ −0.05)
 
 
@@ -484,9 +485,10 @@ def _core_stair_steps(z0: float, z1: float):
     h = (z1 - z0) / n
     xa, xm, xb = CORE_X[0], FLIGHT_SPLIT, CORE_X[1]
     ya, yt = CORE_Y[0], CORE_Y[0] + 8 * TREAD
-    up = [(_rect(xa, ya + k * TREAD, xm, ya + (k + 1) * TREAD), z0 + (k + 1) * h) for k in range(8)]
+    xl, xr = xm - SPLIT_HALF, xm + SPLIT_HALF                       # faces of the wall between the two flights
+    up = [(_rect(xa, ya + k * TREAD, xl, ya + (k + 1) * TREAD), z0 + (k + 1) * h) for k in range(8)]
     land = [(_rect(xa, yt, xm, CORE_Y[1]), z0 + 9 * h), (_rect(xm, yt, xb, CORE_Y[1]), z0 + 10 * h)]
-    down = [(_rect(xm, yt - (k + 1) * TREAD, xb, yt - k * TREAD), z0 + (11 + k) * h) for k in range(6)]
+    down = [(_rect(xr, yt - (k + 1) * TREAD, xb, yt - k * TREAD), z0 + (11 + k) * h) for k in range(6)]
     return up, land, down, h
 
 
