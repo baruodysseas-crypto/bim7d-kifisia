@@ -25,7 +25,7 @@ from shapely.ops import unary_union
 from . import fm, ingest, structural
 
 DATA = Path(__file__).parent / "data"
-DEMO_REV = 16
+DEMO_REV = 18
 
 # levels relative to the ground floor top (drawings: -2.00 / +1.00 / +4.05 / +7.10 / +10.30 / ridge +13.50)
 LEVELS = {"basement": -3.00, "ground": 0.0, "first": 3.05, "second": 6.10, "attic": 9.30, "roof": 12.50}
@@ -851,12 +851,44 @@ def _joined_partitions(st: str, rects: list, reach: float = 0.35) -> list[tuple[
                 else:
                     y0, y1 = (y0, y1 + d) if end else (y0 - d, y1)
         out[i] = (round(x0, 4), round(y0, 4), round(x1, 4), round(y1, 4))
+    # close the remaining joints (L and T corners where two walls only touch at a point, slits next to columns/external walls):
+    # a morphological closing of all walls fills every gap narrower than 2 × 6 cm; door openings are much wider and stay open
+    from shapely.geometry import box as _b2
+    walls = unary_union([_b2(*r) for r in out])
+    solid = unary_union([walls] + obst)
+    closed = solid.buffer(0.06, join_style=2, cap_style=3).buffer(-0.06, join_style=2, cap_style=3)
+    fill = closed.difference(solid).intersection(walls.buffer(0.07, join_style=2, cap_style=3))
+    # L corners: a wall along x and a wall along y whose ends meet only at a point (or a few cm apart) get the corner square
+    hor = [r for r in out if (r[2] - r[0]) >= (r[3] - r[1])]
+    ver = [r for r in out if (r[2] - r[0]) < (r[3] - r[1])]
+    tol = 0.12
+    for A in hor:
+        for xe in (A[0], A[2]):
+            for B in ver:
+                if not (B[0] - tol <= xe <= B[2] + tol):
+                    continue
+                for ye in (B[1], B[3]):
+                    if not (A[1] - tol <= ye <= A[3] + tol):
+                        continue
+                    q = _b2(min(B[0], xe), min(A[1], ye), max(B[2], xe), max(A[3], ye))
+                    if q.area > 0.06:
+                        continue
+                    fill = fill.union(q.difference(walls))
+    for g in (fill.geoms if hasattr(fill, "geoms") else [fill]):
+        if g.is_empty or g.area < 1e-4 or g.geom_type != "Polygon":
+            continue
+        for r in _rects_of(g):
+            if (r[2] - r[0]) > 0.005 and (r[3] - r[1]) > 0.005:
+                out.append(tuple(round(v, 4) for v in r))
     return out
 
 
 def _interior(add, st: str, z_floor: float, z_next: float, meta: dict) -> None:
     """Interior partitions of the floor plan (one element per storey) with their doors, lintels and the masonry above the doors."""
-    rects = _joined_partitions(st, OPENINGS["partitions"].get(st, []))
+    rects = OPENINGS["partitions"].get(st, [])
+    if st == "basement":                       # A.01: under the dashed part of the private stairs the wall is interrupted (open to the boiler room)
+        rects = [r for r in rects if not (7.0 <= r[0] and r[2] <= 11.4 and 15.2 <= r[1] and r[3] <= 15.5)]
+    rects = _joined_partitions(st, rects)
     doors = OPENINGS["doors"].get(st, [])
     if not rects and not doors:
         return
@@ -885,7 +917,19 @@ def _interior(add, st: str, z_floor: float, z_next: float, meta: dict) -> None:
         t_w, c_w = 0.10, (my if along_x else mx)
         for sgn in (1, -1):                                              # thickness / axis of the wall that continues beside the door
             px, py = mx + d[0] * sgn * (ow / 2 + 0.08), my + d[1] * sgn * (ow / 2 + 0.08)
-            hit = next((q for q in rects if q[0] - 0.02 <= px <= q[2] + 0.02 and q[1] - 0.02 <= py <= q[3] + 0.02), None)
+            # the wall that continues beside the door must run in the door's direction (not a wall crossing it)
+            hit = next((q for q in rects if ((q[2] - q[0]) >= (q[3] - q[1])) == along_x
+                        and q[0] - 0.02 <= px <= q[2] + 0.02 and q[1] - 0.08 <= py <= q[3] + 0.08), None)
+            if not hit and _frame() and st in _frame()["levels"]:          # or an RC wall/column of the frame beside the door
+                for c in _frame()["levels"][st]["columns"]:
+                    P = _clean_poly(c["poly"])
+                    for q in _rects_of(P):
+                        if min(q[2] - q[0], q[3] - q[1]) >= 0.07 and ((q[2] - q[0]) >= (q[3] - q[1])) == along_x \
+                                and q[0] - 0.02 <= px <= q[2] + 0.02 and q[1] - 0.08 <= py <= q[3] + 0.08:
+                            hit = q
+                            break
+                    if hit:
+                        break
             if hit:
                 t_w = max(min(hit[2] - hit[0], hit[3] - hit[1]), 0.08)
                 c_w = (hit[1] + hit[3]) / 2 if along_x else (hit[0] + hit[2]) / 2
