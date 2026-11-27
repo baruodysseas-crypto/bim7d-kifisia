@@ -25,7 +25,7 @@ from shapely.ops import unary_union
 from . import fm, ingest, structural
 
 DATA = Path(__file__).parent / "data"
-DEMO_REV = 24
+DEMO_REV = 23
 
 # levels relative to the ground floor top (drawings: -2.00 / +1.00 / +4.05 / +7.10 / +10.30 / ridge +13.50)
 LEVELS = {"basement": -3.00, "ground": 0.0, "first": 3.05, "second": 6.10, "attic": 9.30, "roof": 12.50}
@@ -537,9 +537,8 @@ def _private_stair_steps(z0: float, z1: float, side: int):
 
 
 def _private_stair(z0, z1, side):
-    # the private stairs are built solid: masonry under the whole stair down to the basement floor (user, on the 3D check)
     st, h = _private_stair_steps(z0, z1, side)
-    return trimesh.util.concatenate([_convex_plate(p, z0, t) for p, t in st])
+    return trimesh.util.concatenate([_tread_solid(p, t, z0, h) for p, t in st])
 
 
 def _private_stair_holes():
@@ -563,8 +562,8 @@ def stair_undersides(st: str) -> list[tuple[float, float, float, float, float]]:
         z0, z1 = L[st], L[STOREY_ORDER[i + 1]]
         up, land, down, h, hd = _core_stair_steps(z0, z1)
         sets = [(up + land, h), (down, hd)]
-        if st == "basement":                                       # solid under the private stairs: walls there stop at the floor
-            sets += [([(p, z0 + h + WAIST) for p, _ in _private_stair_steps(z0, z1, s)[0]], h) for s in (1, -1)]
+        if st == "basement":
+            sets += [(_private_stair_steps(z0, z1, s)[0], h) for s in (1, -1)]
         for steps, r in sets:
             for pts, top in steps:
                 xs, ys = [p[0] for p in pts], [p[1] for p in pts]
