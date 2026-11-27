@@ -25,7 +25,7 @@ from shapely.ops import unary_union
 from . import fm, ingest, structural
 
 DATA = Path(__file__).parent / "data"
-DEMO_REV = 18
+DEMO_REV = 19
 
 # levels relative to the ground floor top (drawings: -2.00 / +1.00 / +4.05 / +7.10 / +10.30 / ridge +13.50)
 LEVELS = {"basement": -3.00, "ground": 0.0, "first": 3.05, "second": 6.10, "attic": 9.30, "roof": 12.50}
@@ -566,6 +566,20 @@ def stair_undersides(st: str) -> list[tuple[float, float, float, float, float]]:
     return out
 
 
+def _step_tops_at(st: str, x: float, y: float) -> list[float]:
+    """Levels of the step tops near (x, y) (within 0.15 m), for walls that stand on a stair."""
+    L = LEVELS
+    i = STOREY_ORDER.index(st)
+    z0, z1 = L[st], L[STOREY_ORDER[i + 1]]
+    out = []
+    for side in (1, -1):
+        for pts, top in _private_stair_steps(z0, z1, side)[0]:
+            xs, ys = [p[0] for p in pts], [p[1] for p in pts]
+            if min(xs) - 0.15 <= x <= max(xs) + 0.15 and min(ys) - 1e-3 <= y <= max(ys) + 1e-3:
+                out.append(top)
+    return out or [z0]
+
+
 def _wall_boxes_under_stairs(x0, y0, x1, y1, zb, zt, st):
     """A partition (plan rectangle, from zb to zt) split where steps pass over it: there it stops under the stair."""
     over = [u for u in stair_undersides(st) if u[0] < x1 - 1e-3 and u[2] > x0 + 1e-3 and u[1] < y1 - 1e-3 and u[3] > y0 + 1e-3]
@@ -888,8 +902,12 @@ def _interior(add, st: str, z_floor: float, z_next: float, meta: dict) -> None:
     rects = OPENINGS["partitions"].get(st, [])
     if st == "basement":                       # A.01: under the dashed part of the private stairs the wall is interrupted (open to the boiler room)
         rects = [r for r in rects if not (7.0 <= r[0] and r[2] <= 11.4 and 15.2 <= r[1] and r[3] <= 15.5)]
+    hanging = []
+    if st == "basement":
+        hanging = [r for r in rects if abs(r[0] - 9.054) < 0.02 and abs(r[2] - 9.254) < 0.02 and r[1] > 15.3]   # 0.20 wall Δ1|Δ2
+        rects = [r for r in rects if r not in hanging] + [(8.304, 12.853, 9.404, 13.103)]                  # core back wall closed
     rects = _joined_partitions(st, rects)
-    doors = OPENINGS["doors"].get(st, [])
+    doors = [d for d in OPENINGS["doors"].get(st, []) if not (st == "basement" and abs(d["mid"][1] - 12.81) < 0.05)]
     if not rects and not doors:
         return
     top_flat = z_next - SLAB_T if st != "attic" else z_floor + 2.7
@@ -963,6 +981,17 @@ def _interior(add, st: str, z_floor: float, z_next: float, meta: dict) -> None:
                 boxes.append(_box_mesh(x0, y0, z_h + lh, x1, y1, zt))
                 face += ow * (zt - z_h - lh)
                 length += ow
+    for (x0, y0, x1, y1) in hanging:
+        steps = [b for b in stair_undersides(st) if b[1] < y1 and b[3] > y0 and (abs(b[2] - x0) < 0.05 or abs(b[0] - x1) < 0.05)]
+        cuts = sorted({y0, y1, *[min(max(v, y0), y1) for b in steps for v in (b[1], b[3])]})
+        for a, b_ in zip(cuts[:-1], cuts[1:]):
+            m = (a + b_) / 2
+            tops = [b[4] + LEVELS["basement"] * 0 for b in steps if b[1] <= m <= b[3]]
+            if not tops:
+                continue
+            # step top = underside + waist + riser: rebuild it from the step list
+            zb = max(t for t in _step_tops_at(st, (x0 + x1) / 2, m))
+            boxes.append(_box_mesh(x0, a, zb, x1, b_, top_flat))
     if boxes:
         t_avg = float(np.mean(vol_t)) if vol_t else 0.1
         add(f"Internal walls {st}", f"intwall_{st}", trimesh.util.concatenate(boxes), internal=True,
