@@ -30,7 +30,7 @@ def test_frontend_is_the_7d_edition():
     a = client.get("/static/js/anim.js").text
     assert "_setupCollapse" in a and "ΚΑΤΑΡΡΕΥΣΗ" in a
     m = client.get("/static/js/main.js").text
-    assert "fmView" in m and "7D Διαχείριση εγκαταστάσεων" in m and "4D Χρόνος" in m and "6D Ενέργεια" in m
+    assert "fmView" in m and "7D Διαχείριση εγκαταστάσεων" in m and "4D Χρόνος" in m and "6D Βιωσιμότητα" in m and "7D Κίνδυνοι & ανθεκτικότητα" in m
     assert "renovationView" not in m and "ΚΑΕΚ" not in m and "όροι" not in m.lower()
     v5 = client.get("/static/js/views5.js").text                    # live site data: cadastre, earthquakes, climate – no building terms
     assert "Κτηματολόγιο" in v5 and "όροι δόμησης" not in v5.lower() and "συντελεστ" not in v5.lower()

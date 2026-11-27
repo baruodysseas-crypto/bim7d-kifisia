@@ -566,7 +566,7 @@ def build(project: dict[str, Any], pstate: dict[str, Any], data: dict[str, Any],
     if perm.get("number"):
         d.P(T(f"Οικοδομική άδεια {perm['number']} / {perm.get('date', '')} – {perm.get('authority', '')}", f"Building permit {perm['number']} / {perm.get('date', '')} – {perm.get('authority', '')}"), "cover_s")
     d.story.append(Spacer(1, 12 * mm))
-    d.P(T("Διαστάσεις BIM: 1D–3D σχέδια και ψηφιακό δίδυμο · 4D χρόνος κατασκευής και διάρκεια ζωής · 5D κόστος κατασκευής και κόστος στον χρόνο · 6D ενέργεια και περιβαλλοντικό αποτύπωμα · 7D διαχείριση εγκαταστάσεων και ιδιοκτησιών, κίνδυνοι.", "BIM dimensions: 1D–3D drawings and digital twin · 4D construction time and service life · 5D construction cost and cost over time · 6D energy and environmental footprint · 7D facility and property management, risks."), "body")
+    d.P(T("Διαστάσεις BIM (Charef κ.ά. 2018): 3D σχέδια και ψηφιακό δίδυμο · 4D χρόνος κατασκευής και διάρκεια ζωής · 5D κόστος κατασκευής και κόστος κύκλου ζωής · 6D βιωσιμότητα (ενέργεια, άνθρακας κύκλου ζωής) · 7D διαχείριση εγκαταστάσεων και περιουσιακών στοιχείων, με τη διαχείριση κινδύνων και την ανθεκτικότητα.", "BIM dimensions (Charef et al. 2018): 3D drawings and digital twin · 4D construction time and service life · 5D construction and life-cycle cost · 6D sustainability (energy, whole-life carbon) · 7D facility and asset management, including risk management and resilience."), "body")
     d.story.append(Spacer(1, 40 * mm))
     d.P(f"{T('Ημερομηνία', 'Date')}: {date.today().strftime('%d/%m/%Y')}" + (f" · {T('Συντάκτης', 'Author')}: {author}" if author else ""), "small")
     d.P(T("Η μελέτη παράγεται από το εργαλείο 7D-BIM Lifecycle και έχει χαρακτήρα προμελέτης (screening): τα αποτελέσματα ενέργειας, κόστους και κινδύνων είναι ενδεικτικά και δεν υποκαθιστούν "
@@ -839,7 +839,7 @@ def build(project: dict[str, Any], pstate: dict[str, Any], data: dict[str, Any],
     # ---- 8 hazards
     if "hazards" in sections:
         seis, fi, wild, fl, risk = data["seismic"], data["fire_internal"], data["wildfire"], data["flood"], data["risk"]
-        d.H1("7D – Κίνδυνοι: σενάρια και συμπεριφορά του κτιρίου", "7D – Risks: hazard scenarios and building behaviour")
+        d.H1("7D – Κίνδυνοι και ανθεκτικότητα: σενάρια και συμπεριφορά του κτιρίου", "7D – Risk and resilience: hazard scenarios and building behaviour")
         d.P(T("Εκτίμηση ζημιών σε επίπεδο προμελέτης για τη φάση χρήσης και συντήρησης. Τα αποτελέσματα δίνουν τάξη μεγέθους και συγκριτικό όφελος μέτρων, όχι έλεγχο επάρκειας.", "Screening-level damage estimates for the use and maintenance phases. Results indicate order of magnitude and relative benefit of measures, not a code compliance check."))
         d.H2("Σεισμός – τρία σενάρια", "Earthquake – three scenarios")
         r0 = seis["runs"]["moderate"]

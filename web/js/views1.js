@@ -11,9 +11,10 @@ const kn = (k) => (KIND_NAMES[k] ? KIND_NAMES[k][S.lang === "el" ? 0 : 1] : k);
 // ------------------------------------------------------------------ PROJECT
 export async function projectView(root) {
   const p = S.project, m = p.meta;
-  root.append(h("h1", {}, T("Σχέδια και ψηφιακό δίδυμο (1D–3D)", "Drawings and digital twin (1D–3D)")), h("p", { class: "lead" }, T("1D–3D: τα σχέδια (PDF/DXF) και το 3D μοντέλο αποτελούν το ψηφιακό δίδυμο του κτιρίου. Από αυτό προκύπτουν τα στοιχεία BIM και οι ποσότητες που τροφοδοτούν το 4D (χρόνος), το 5D (κόστος), το 6D (ενέργεια, αποτύπωμα) και το 7D (διαχείριση εγκαταστάσεων και ιδιοκτησιών).", "1D–3D: the drawings (PDF/DXF) and the 3D model form the digital twin of the building. They give the BIM elements and quantities that feed 4D (time), 5D (cost), 6D (energy, footprint) and 7D (facility and property management).")));
+  root.append(h("h1", {}, T("Σχέδια, μοντέλο και ψηφιακό δίδυμο (3D)", "Drawings, model and digital twin (3D)")), h("p", { class: "lead" }, T("Τα σχέδια (PDF/DXF) και το 3D μοντέλο αποτελούν το ψηφιακό δίδυμο του κτιρίου. Από αυτό προκύπτουν τα στοιχεία BIM και οι ποσότητες που τροφοδοτούν το 4D (χρόνος), το 5D (κόστος), το 6D (βιωσιμότητα) και το 7D (διαχείριση εγκαταστάσεων, περιουσιακών στοιχείων και κινδύνων).", "The drawings (PDF/DXF) and the 3D model form the digital twin of the building. They give the BIM elements and quantities that feed 4D (time), 5D (cost), 6D (sustainability) and 7D (facility, asset and risk management).")));
   if (m.synthetic_geometry) root.append(h("div", { class: "card", style: { padding: "8px 14px" } }, h("span", { class: "small" }, T("Το 3D είναι μοντέλο BIM φτιαγμένο από τη μελέτη: ο φέρων οργανισμός (θέσεις και διατομές υποστυλωμάτων/τοιχωμάτων, δοκάρια, οπλισμοί) διαβάζεται από τους ξυλότυπους Σ.01–Σ.06, οι όγκοι και τα ανοίγματα από τις αρχιτεκτονικές κατόψεις και ο περιβάλλων χώρος από το μοντέλο Rhino.", "The 3D is a BIM model built from the design: the structural skeleton (positions and sections of columns/walls, beams, reinforcement) is read from the formwork drawings S.01–S.06, the volumes and openings from the architectural plans and the surroundings from the Rhino model."))));
 
+  root.append(dimensionsCard());
   const nm = (x) => x[S.lang === "el" ? "name_el" : "name_en"];
   const isAttic = (x) => x.key === "attic" || /σοφίτ|attic/i.test(x.name_el + " " + x.name_en);
   const floorsAbove = p.storeys.filter((x) => x.elevation_m >= 0 && !isAttic(x)).length;   // basement and attic are not floors in the building-factor sense
@@ -120,9 +121,25 @@ export async function projectView(root) {
     h("tbody", {}, Object.entries(p.model).map(([k, v]) => h("tr", {}, h("td", {}, h("i", { style: { display: "inline-block", width: "10px", height: "10px", borderRadius: "3px", background: KIND_COLORS[k] || "#ccc", marginRight: "6px" } }), kn(k)), h("td", { class: "n" }, fmt(v.count)), h("td", { class: "n" }, fmt(v.volume_m3, 1))))))));
 }
 
+// the BIM dimensions as the tool uses them, aligned with the literature (Charef et al. 2018 and the standards of each dimension)
+function dimensionsCard() {
+  const rows = [
+    ["3D", T("Γεωμετρία και πληροφορία των στοιχείων (ψηφιακό δίδυμο)", "Geometry and element information (digital twin)"), T("Στοιχεία τύπου IFC, ποσότητες, φέρων οργανισμός από τη στατική μελέτη", "IFC-type elements, quantities, structural frame from the static study"), "ISO 16739 (IFC), ISO 19650"],
+    ["4D", T("Χρόνος", "Time"), T("Χρονοπρόγραμμα κατασκευής συνδεδεμένο με τα στοιχεία, διάρκεια ζωής στοιχείων", "Construction schedule linked to the elements, service life of components"), "ISO 15686-1"],
+    ["5D", T("Κόστος", "Cost"), T("Κόστος κατασκευής από την προμέτρηση, κόστος κύκλου ζωής (LCC)", "Construction cost from the quantities, life-cycle cost (LCC)"), "ISO 15686-5, EN 15459"],
+    ["6D", T("Βιωσιμότητα", "Sustainability"), T("Ενεργειακή απόδοση (πρωτογενής ενέργεια, κλάση), άνθρακας κύκλου ζωής (λειτουργίας και ενσωματωμένος), κλίμα της θέσης", "Energy performance (primary energy, class), whole-life carbon (operational and embodied), site climate"), "EN 15978, ISO 52000 / ΚΕΝΑΚ, EPBD 2024/1275"],
+    ["7D", T("Διαχείριση εγκαταστάσεων και περιουσιακών στοιχείων", "Facility and asset management"), T("Ιδιοκτησίες και επιμερισμός δαπανών, μητρώο εγκαταστάσεων, συντήρηση. Διαχείριση κινδύνων: σεισμός, φωτιά, πλημμύρα, αναμενόμενη ετήσια απώλεια, ανθεκτικότητα", "Properties and cost allocation, asset register, maintenance. Risk management: earthquake, fire, flood, expected annual loss, resilience"), "ISO 41001, ISO 55000, ISO 31000, FEMA P-58"],
+  ];
+  return h("div", { class: "card" }, h("h2", {}, T("Οι διαστάσεις του BIM στο εργαλείο", "The BIM dimensions in the tool")),
+    h("p", { class: "small" }, T("Μετά την τρίτη διάσταση δεν υπάρχει ενιαίος ορισμός. Το εργαλείο ακολουθεί την πλειονότητα των επαγγελματιών στην έρευνα των Charef κ.ά. (2018): το 6D είναι η βιωσιμότητα (86 %) και το 7D η διαχείριση εγκαταστάσεων (85 %). Οι κίνδυνοι κατά τη λειτουργία εντάσσονται στο 7D ως διαχείριση κινδύνων των περιουσιακών στοιχείων (ISO 55000, ISO 31000). Το «8D» της ασφάλειας στην κατασκευή (Kamardeen 2010) δεν καλύπτεται. Σε κάθε διάσταση δηλώνονται ρητά η πληροφορία και το πρότυπο, όπως προτείνει το NBS.",
+      "Beyond the third dimension there is no single definition. The tool follows the majority of practitioners in the survey of Charef et al. (2018): 6D is sustainability (86 %) and 7D facility management (85 %). Risks during operation belong to 7D as risk management of the assets (ISO 55000, ISO 31000). The construction-safety \u201c8D\u201d (Kamardeen 2010) is not covered. Each dimension states its information and standard explicitly, as the NBS suggests.")),
+    h("table", {}, h("thead", {}, h("tr", {}, h("th", {}, T("Διάσταση", "Dimension")), h("th", {}, T("Θέμα", "Subject")), h("th", {}, T("Τι περιέχει στο εργαλείο", "What it contains in the tool")), h("th", {}, T("Πρότυπα", "Standards")))),
+      h("tbody", {}, rows.map(([d, a, b, c]) => h("tr", {}, h("td", {}, h("b", {}, d)), h("td", {}, a), h("td", { class: "small" }, b), h("td", { class: "small" }, c))))));
+}
+
 // ------------------------------------------------------------------ MODEL 3D
 export async function modelView(root) {
-  root.append(h("h1", {}, T("Μοντέλο 3D και 4D", "3D model and 4D")), h("p", { class: "lead" }, T("Περιστροφή: αριστερό κλικ · μετακίνηση: δεξί κλικ · ζουμ: τροχός. Κλικ σε στοιχείο για ιδιότητες. Λειτουργίες: τύπος, όροφος, 4D (πρόοδος κατασκευής), ζημιές από σενάριο κινδύνου.", "Rotate: left click · pan: right click · zoom: wheel. Click an element for its properties. Modes: type, storey, 4D (construction progress), hazard damage.")));
+  root.append(h("h1", {}, T("Μοντέλο 3D και 4D", "3D model and 4D")), h("p", { class: "lead" }, T("Περιστροφή: αριστερό κλικ · μετακίνηση: δεξί κλικ · ζουμ: τροχός (προς τον δείκτη) · διπλό κλικ: εστίαση στο στοιχείο. Κλικ σε στοιχείο για ιδιότητες. Λειτουργίες: τύπος, όροφος, 4D (πρόοδος κατασκευής), ζημιές από σενάριο κινδύνου.", "Rotate: left click · pan: right click · zoom: wheel (towards the pointer) · double click: focus on the element. Click an element for its properties. Modes: type, storey, 4D (construction progress), hazard damage.")));
   const glwrap = h("div", { id: "glwrap" });
   const hud = h("div", { id: "glhud" });
   const info = h("div", { class: "card small" }, T("Κάντε κλικ σε στοιχείο.", "Click an element."));
@@ -136,8 +153,10 @@ export async function modelView(root) {
   }
   root.append(h("div", { class: "viewer-wrap" }, h("div", {}, glwrap), side));
   glwrap.append(hud);
-  if (!viewer) viewer = new Viewer();
+  if (!viewer) { viewer = new Viewer(); window.__viewer = viewer; }
   const holder = h("div", { style: { position: "absolute", inset: 0 } }); glwrap.prepend(holder); viewer.attach(holder);
+  const vb = (k, l) => h("button", { class: "btn small", onclick: () => viewer.view(k) }, l);
+  glwrap.append(h("div", { class: "viewbar" }, vb("home", "⌂ " + T("Αρχική", "Home")), vb("front", T("Πρόσοψη", "Front")), vb("side", T("Πλάγια", "Side")), vb("back", T("Πίσω", "Back")), vb("top", T("Κάτοψη", "Top"))));
   let range = null;
   if (viewerPid !== S.pid + ":" + S.project.element_count + ":" + (S.cache.glbv || 0)) {
     hud.replaceChildren(h("div", { class: "hud" }, spinner(), " " + T("Φόρτωση μοντέλου…", "Loading model…")));

@@ -104,7 +104,7 @@ export async function siteView(root) {
         h("p", { class: "small mutedt" }, T("Περιοχή 150 km· στους πολύ μεγάλους σεισμούς ο κατάλογος (μικτές κλίμακες μεγέθους) υποεκτιμά/υπερεκτιμά· τα αποτελέσματα είναι ενδεικτικά.", "150 km region; with mixed magnitude scales the largest events are uncertain; results are indicative.")))));
     // 7D link
     const sr = s.scenario_rates || {};
-    box.append(h("h3", {}, T("Σύνδεση με τους κινδύνους του 7D", "Link to the 7D risks")),
+    box.append(h("h3", {}, T("Σύνδεση με τους κινδύνους (7D)", "Link to the risks (7D)")),
       h("table", {}, h("thead", {}, h("tr", {}, h("th", {}, T("Σενάριο 7D", "7D scenario")), h("th", { class: "n" }, "Ms @ km"), h("th", { class: "n" }, "PGA"), h("th", { class: "n" }, T("ετήσια πιθανότητα – παραδοχή", "annual probability – assumed")), h("th", { class: "n" }, T("ετήσια πιθανότητα – από το ιστορικό", "annual probability – from history")), h("th", { class: "n" }, T("περίοδος επαναφοράς", "return period")))),
         h("tbody", {}, Object.entries(sr).map(([k, r]) => h("tr", {}, h("td", {}, (R.scenarios[k] || {})[S.lang === "el" ? "el" : "en"] || k), h("td", { class: "n" }, `${fmt(r.Ms, 1)} @ ${fmt(r.distance_km)}`), h("td", { class: "n" }, g3(r.pga_g)),
           h("td", { class: "n" }, fmt((r.assumed || 0) * 100, 2) + "%"), h("td", { class: "n" }, h("b", {}, fmt(r.annual_probability * 100, 3) + "%")), h("td", { class: "n" }, r.return_period_y ? fmt(r.return_period_y) + T(" έτη", " y") : "–"))))),

@@ -217,7 +217,7 @@ export class DamageAnim {
     st.forEach((s, i) => { const k = i - oi; if (k < 0) return; const d = k * 0.05; perStorey[s.id] = { I: this._fI(u - d) * Math.pow(this.pv, k), p: this._fC(u - d), s, k }; });
     const tick = (i, it) => { const ps = perStorey[it.storey]; this._paint(it, ps ? ps.p : 0, ps ? ps.I : 0); };
     this.items.forEach((it, i) => tick(i, it));
-    for (const w of this.windows) { const ps = perStorey[w.storey]; w.m.material.opacity = ps && ps.I > 0.35 ? lerp(0.5, 0.1, smooth(0.35, 0.6, ps.I)) : 0.5; }
+    for (const w of this.windows) { const ps = perStorey[w.storey]; w.m.material.opacity = ps && ps.I > 0.35 ? lerp(0.38, 0.1, smooth(0.35, 0.6, ps.I)) : 0.38; }
     this.p = this._fC(u); this.lossNow = (this.meta.loss_eur || 0) * this.p;
     if (dt > 0) {
       for (const k in perStorey) {

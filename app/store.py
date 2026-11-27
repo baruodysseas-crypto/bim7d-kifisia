@@ -126,6 +126,7 @@ def ensure_demo() -> None:
     (the old copy, with any edits, is moved to projects/_backup/ instead of being deleted)."""
     from . import demo, ingest
     pid = "demo-kifisia"
+    keep_live = None
     if exists(pid):
         try:
             rev = int(load(pid).get("meta", {}).get("demo_rev", 1))
@@ -133,6 +134,10 @@ def ensure_demo() -> None:
             rev = 1
         if rev >= demo.DEMO_REV:
             return
+        try:
+            keep_live = load(pid).get("live")          # fetched site data (cadastre, earthquakes, climate) survive a model rebuild
+        except Exception:
+            keep_live = None
         bak = ROOT / "_backup"
         bak.mkdir(parents=True, exist_ok=True)
         dest = bak / f"{pid}-rev{rev}"
@@ -142,5 +147,7 @@ def ensure_demo() -> None:
             dest = bak / f"{pid}-rev{rev}-{n}"
         shutil.move(str(project_dir(pid)), str(dest))
     project, meshes = demo.build_project(pid)
+    if keep_live:
+        project["live"] = keep_live
     save(project)
     ingest.export_glb(project["elements"], meshes, glb_path(pid))

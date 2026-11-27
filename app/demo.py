@@ -25,7 +25,7 @@ from shapely.ops import unary_union
 from . import fm, ingest, structural
 
 DATA = Path(__file__).parent / "data"
-DEMO_REV = 11
+DEMO_REV = 12
 
 # levels relative to the ground floor top (drawings: -2.00 / +1.00 / +4.05 / +7.10 / +10.30 / ridge +13.50)
 LEVELS = {"basement": -3.00, "ground": 0.0, "first": 3.05, "second": 6.10, "attic": 9.30, "roof": 12.50}
@@ -251,6 +251,7 @@ def _oriented_box(p, q, z0, h, t) -> trimesh.Trimesh:
 
 
 T_ROOF = 0.20
+EAVES, VERGE = 0.40, 0.20          # roof overhangs drawn in the 3D model (eaves / verge)
 
 
 def _roof_geometry() -> tuple[float, float, float]:
@@ -286,7 +287,7 @@ def build_parts(members: dict, windows: list[dict]) -> tuple[list[dict], dict]:
         parts.append({"name": name, "layer": layer, "mesh": mesh, "props": props})
 
     # --- site: real plot outline, street fence along the A-D side, excavation outline (visible with the section slider)
-    add("Site ground", "site", site_plate() if not (DATA / "real3d.npz").exists() else _convex_plate(PLOT, -1.60, -1.30), qty_override={"plan_area_m2": PLOT_AREA})
+    add("Site ground", "site", site_plate() if not (DATA / "real3d.npz").exists() else _real_site_plate(), qty_override={"plan_area_m2": PLOT_AREA})
     add("Excavation outline", "excavation", _slab_mesh(Polygon(EXC_OUTLINE), L["basement"] - RAFT_T - BLINDING_T, L["basement"] - RAFT_T - BLINDING_T + 0.03),
         qty_override={"plan_area_m2": EXC_AREA, "perimeter_m": EXC_PERIMETER})
 
@@ -296,7 +297,12 @@ def build_parts(members: dict, windows: list[dict]) -> tuple[list[dict], dict]:
         qty_override={"perimeter_m": round(raft.length, 3)})
     FR = _frame()
     if FR:
+        seen_fb: set[tuple] = set()
         for bm in FR["levels"]["foundation"]["beams"]:
+            key = (tuple(round(v, 2) for v in bm["a"]), tuple(round(v, 2) for v in bm["b"]), bm["b_cm"], bm["h_cm"])
+            if key in seen_fb:
+                continue
+            seen_fb.add(key)
             add(f"Foundation beam {bm['id']}", "foundation", _beam_mesh(bm["a"], bm["b"], L["basement"] - bm["h_cm"] / 100, bm["b_cm"] / 100, bm["h_cm"] / 100 - RAFT_T,
                                                                         top=L["basement"] - RAFT_T), source="Σ.01", rebar=",".join(x for x in (bm.get("bars"), bm.get("side")) if x), stirrups=bm.get("stirrups"))
     else:
@@ -327,9 +333,23 @@ def build_parts(members: dict, windows: list[dict]) -> tuple[list[dict], dict]:
                 P = _clean_poly(c["poly"])
                 cx, cy = P.centroid.x, P.centroid.y
                 h_c = max(_roof_under(cx, cy) - z_floor, 0.6) if st == "attic" else h_col
-                add(f"Column {c['id']} {st}", f"column_{st}", _slab_mesh(P, z_floor, z_floor + h_c), section_area_m2=round(P.area, 4),
+                qm = _slab_mesh(P, z_floor, z_floor + h_c)                       # measured member: clear height (floor to soffit)
+                # drawn member: continuous through the slab below (the column passes the joint) and, in the attic, up into the pitched roof,
+                # so the load path column → slab/beam → column → foundation is visible and no member floats
+                z_bot = z_floor - SLAB_T if st != "basement" else z_floor
+                z_top = z_floor + h_c
+                if st == "attic":
+                    _, _, tv = _roof_geometry()
+                    inside = any(x0 - 1e-6 <= cx <= x1 + 1e-6 and y0 - 1e-6 <= cy <= y1 + 1e-6 for (x0, y0, x1, y1) in G["attic"])
+                    z_top = max(_roof_under(x, y) for x, y in P.exterior.coords) + (tv * 0.5 if inside else 0.0)
+                add(f"Column {c['id']} {st}", f"column_{st}", _slab_mesh(P, z_bot, z_top), section_area_m2=round(P.area, 4),
                     section=c.get("section"), rebar=c.get("long"), stirrups=f"Φ{c.get('stirrup_d')}/{c.get('stirrup_s_cm')}", source=lvl["sheet"],
-                    perimeter_m=round(P.length, 3))
+                    perimeter_m=round(P.length, 3), qty_override={"volume_m3": round(float(qm.volume), 4), "surface_m2": round(float(qm.area), 3), "height_m": round(h_c, 4)})
+                if st == "basement" and not raft.buffer(0.05).contains(Point(cx, cy)):
+                    # column outside the raft (light wells, ramp): it needs its own pad footing, otherwise it would stand on nothing
+                    fx0, fy0, fx1, fy1 = P.buffer(0.30, join_style=2).bounds
+                    add(f"Pad footing under {c['id']}", "foundation", _box_mesh(fx0, fy0, z_floor - 0.50, fx1, fy1, z_floor), added_support=True,
+                        note="Πέδιλο που προστέθηκε στο μοντέλο ώστε το υποστύλωμα έξω από τη γενική κοιτόστρωση να έχει θεμελίωση (δεν φαίνεται στα σχέδια).")
             for bm in lvl["beams"]:
                 a, b = bm["a"], bm["b"]
                 z_top = min(_roof_under(*a), _roof_under(*b)) if st == "attic" else z_floor + h_col
@@ -398,8 +418,14 @@ def build_parts(members: dict, windows: list[dict]) -> tuple[list[dict], dict]:
         for sx0, sx1 in ((x0, xm), (xm, x1)):
             xo, xr = (sx0, sx1) if sx0 == x0 else (sx1, sx0)      # eaves side, ridge side
             sec = [(xo, z_e), (xr, z_r), (xr, z_r - tv), (xo, z_e - tv)]
-            add("Roof slab pitched", "roof", _prism(sec, y0, y1), qty_override={"plan_area_m2": round(slope * (y1 - y0), 3), "thickness_m": t_roof,
-                                                                              "perimeter_m": round(2 * (slope + (y1 - y0)), 3)})
+            vol = float(_prism(sec, y0, y1).volume)
+            # drawn with a 0.40 m eaves and 0.20 m verge overhang (as built): the roof edge then sits over the walls instead of sharing their faces
+            sgn = -1.0 if xo < xr else 1.0
+            k = (z_r - z_e) / abs(xr - xo)
+            xo2 = xo + sgn * EAVES
+            sec2 = [(xo2, z_e - k * EAVES), (xr, z_r), (xr, z_r - tv), (xo2, z_e - k * EAVES - tv)]
+            add("Roof slab pitched", "roof", _prism(sec2, y0 - VERGE, y1 + VERGE), qty_override={"plan_area_m2": round(slope * (y1 - y0), 3), "thickness_m": t_roof,
+                                                                              "perimeter_m": round(2 * (slope + (y1 - y0)), 3), "volume_m3": round(vol, 4)})
             roof_area += slope * (y1 - y0)
     meta["roof_slope_area_m2"] = round(roof_area, 2)
 
@@ -733,6 +759,17 @@ def _clip_convex(pts, x0=None, x1=None, y0=None, y1=None):
     return [tuple(c) for c in list(P.exterior.coords)[:-1]] if not P.is_empty and P.area > 0.01 else None
 
 
+REAL_RAMP = (18.25, 22.85, 15.60)            # ramp + landing of the real (Rhino) model: x from, x to, y end of the landing
+
+
+def _real_site_plate() -> trimesh.Trimesh:
+    """Base plate under the real (Rhino) surroundings, with the opening of the basement ramp so that the sloping ramp
+    (street level → garage door) is visible instead of being covered by the plate."""
+    x0, x1, y1 = REAL_RAMP
+    pieces = [_clip_convex(PLOT, x1=x0), _clip_convex(PLOT, x0=x1), _clip_convex(PLOT, x0=x0, x1=x1, y0=y1)]
+    return trimesh.util.concatenate([_convex_plate(pc, -1.60, -1.30) for pc in pieces if pc])
+
+
 def site_plate() -> trimesh.Trimesh:
     """Site ground over the plot with an opening for the basement ramp (convex pieces, no triangulation engine needed)."""
     x0, x1 = RAMP_X[0] - 0.2, RAMP_X[1] + 0.2
@@ -843,6 +880,110 @@ def real_parts() -> list[dict]:
     return out
 
 
+def _aabb_gap(a, b) -> tuple[float, int, float]:
+    """Separation of two axis-aligned boxes: (largest gap, axis, signed shift that closes it). Negative gap = they overlap."""
+    best = (-1e9, 0, 0.0)
+    for ax in range(3):
+        g1 = b[0][ax] - a[1][ax]                     # b beyond a
+        g2 = a[0][ax] - b[1][ax]                     # a beyond b
+        g, sh = (g1, g1) if g1 >= g2 else (g2, -g2)
+        if g > best[0]:
+            best = (g, ax, sh)
+    return best
+
+
+def connect_real_parts(parts: list[dict], tol: float = 0.02, snap: float = 0.40) -> list[dict]:
+    """Pieces of the Rhino model that do not touch the building (exported without their fixings) are connected to it:
+    a gap up to `snap` is closed by moving the piece onto the nearest element; the timber pergola of the roof terrace,
+    whose posts and bearers are not in the export, gets steel bearers on posts standing on the balcony frames.
+    Returns the added support members; the moved pieces carry the property `snapped_m`."""
+    solid = [p for p in parts if not p["layer"].startswith("land_vegetation") and p["layer"] not in ("site", "excavation")]
+    boxes = [(p, p["mesh"].bounds) for p in solid]
+    added: list[dict] = []
+    for p in parts:
+        if not p["layer"].startswith("land_") or "_real_" not in p["layer"] or p["layer"].startswith(("land_vegetation", "land_site")):
+            continue
+        bb = p["mesh"].bounds
+        cand = [(_aabb_gap(bb, ob), q) for q, ob in boxes if q is not p]
+        (gap, ax, shift), q = min(cand, key=lambda c: c[0][0])
+        if gap <= tol:
+            # boxes touch, but the piece may still hover over a slab or the ground: measure the clear drop under its base
+            drop = _drop_clearance(p["mesh"], [(qq, ob) for qq, ob in boxes if qq is not p])
+            if drop is None or drop < 0.08 or drop > snap:          # a few cm under cladding fixed to a wall is normal; only hovering pieces move
+                continue
+            gap, ax, shift = drop, 2, -drop
+        if gap <= snap:
+            t = [0.0, 0.0, 0.0]
+            t[ax] = shift - math.copysign(0.002, shift) if abs(shift) > 0.004 else shift
+            p["mesh"] = p["mesh"].copy(); p["mesh"].apply_translation(t)
+            p["props"]["snapped_m"] = round(abs(t[ax]), 3)
+            continue
+        if p["props"].get("rhino_layer") == "doma" and "pergola" in p["layer"]:
+            added += _terrace_pergola_supports(p["mesh"], boxes)
+    return added
+
+
+def _drop_clearance(mesh: trimesh.Trimesh, boxes) -> float | None:
+    """Smallest vertical clearance between the base of `mesh` and the surfaces right under it (None: nothing under it)."""
+    V = mesh.vertices
+    zmin = V[:, 2].min()
+    pts = V[V[:, 2] <= zmin + 0.01][:, :2]
+    if not len(pts):
+        return None
+    pts = np.unique(np.round(pts, 3), axis=0)
+    best = None
+    for q, ob in boxes:
+        if ob[1][2] > zmin + 0.01 or ob[1][0] < pts[:, 0].min() or ob[0][0] > pts[:, 0].max() or ob[1][1] < pts[:, 1].min() or ob[0][1] > pts[:, 1].max():
+            if not (ob[0][2] <= zmin + 0.01 and ob[1][0] >= pts[:, 0].min() and ob[0][0] <= pts[:, 0].max() and ob[1][1] >= pts[:, 1].min() and ob[0][1] <= pts[:, 1].max()):
+                continue
+        T = q["mesh"].triangles
+        a, b, c = T[:, 0], T[:, 1], T[:, 2]
+        v0, v1 = b[:, :2] - a[:, :2], c[:, :2] - a[:, :2]
+        den = v0[:, 0] * v1[:, 1] - v1[:, 0] * v0[:, 1]
+        ok = np.abs(den) > 1e-9
+        a, v0, v1, den, b, c = a[ok], v0[ok], v1[ok], den[ok], b[ok], c[ok]
+        for x, y in pts:
+            wx, wy = x - a[:, 0], y - a[:, 1]
+            u = (wx * v1[:, 1] - v1[:, 0] * wy) / den
+            v = (v0[:, 0] * wy - wx * v0[:, 1]) / den
+            inside = (u >= -1e-6) & (v >= -1e-6) & (u + v <= 1 + 1e-6)
+            if not inside.any():
+                continue
+            z = a[inside, 2] + u[inside] * (b[inside, 2] - a[inside, 2]) + v[inside] * (c[inside, 2] - a[inside, 2])
+            z = z[z <= zmin + 0.005]
+            if len(z):
+                d = float(zmin - z.max())
+                best = d if best is None else min(best, d)
+    return best
+
+
+def _terrace_pergola_supports(mesh: trimesh.Trimesh, boxes) -> list[dict]:
+    """Two steel bearers (100x200) along the pergola under its slats and steel posts (120x120) down to whatever is below
+    (balcony frame or slab), at most ~3.6 m apart; posts only where there is something to stand on."""
+    (x0, y0, z0), (x1, y1, z1) = mesh.bounds
+    bw, bh, pw = 0.10, 0.20, 0.12
+    lines = [y0 + 0.30, y1 - 0.12]                                  # bearer axes (slats overhang the front bearer)
+    out = []
+    for yl in lines:
+        out.append({"name": "Pergola steel bearer (support)", "layer": "land_pergola_support", "mesh": _box_mesh(x0 + 0.05, yl - bw / 2, z0 - bh, x1 - 0.05, yl + bw / 2, z0),
+                    "props": {"color": "#3d4043", "landscape": "visual", "measure": "count", "added_support": True}})
+    n = max(2, math.ceil((x1 - x0) / 3.6) + 1)
+    xs = [x0 + 0.15 + i * ((x1 - x0) - 0.30) / (n - 1) for i in range(n)]
+    for yl in lines:
+        for x in xs:
+            top = z0 - bh
+            below = [ob[1][2] for q, ob in boxes if ob[0][0] <= x <= ob[1][0] and ob[0][1] <= yl <= ob[1][1] and ob[1][2] <= top - 0.3]
+            if not below:
+                continue
+            zb = max(below)
+            if top - zb > 4.0:
+                continue
+            out.append({"name": "Pergola steel post (support)", "layer": "land_pergola_support",
+                        "mesh": _box_mesh(x - pw / 2, yl - pw / 2, zb, x + pw / 2, yl + pw / 2, top),
+                        "props": {"color": "#3d4043", "landscape": "visual", "measure": "count", "added_support": True}})
+    return out
+
+
 def landscape_quantities(parts: list[dict]) -> dict[str, float]:
     """Cost quantities of the surroundings (ramp, gates, hedges, trees, planters, frames…) from the parts of landscape_parts()."""
     q: dict[str, float] = {}
@@ -870,6 +1011,7 @@ def build_project(project_id: str = "demo-kifisia") -> tuple[dict[str, Any], dic
         land_q.pop("wood_cladding_m2", None)                   # (timber cladding is measured on the real planks)
         land_q.pop("frame_m3", None)                           # the balcony frames stay as elements and are measured there
         parts += [p for p in land if p["props"].get("measure") == "volume"] + rp      # balcony frames stay (structure)
+        parts += connect_real_parts(parts)                     # fixings missing from the Rhino export (nothing hangs in the air)
     else:
         land_q = {}
         parts += land

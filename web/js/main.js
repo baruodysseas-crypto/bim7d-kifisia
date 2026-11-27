@@ -5,9 +5,9 @@ import { pricesView, reportView } from "./views3.js";
 import { fmView } from "./views4.js";
 import { siteView } from "./views5.js";
 
-const TABS = [["project", "1D–3D Σχέδια", "1D–3D Drawings", projectView], ["site", "Περιοχή – live δεδομένα", "Site – live data", siteView], ["model", "3D ψηφιακό δίδυμο / 4D", "3D digital twin / 4D", modelView], ["quantities", "Προμέτρηση", "Quantities", quantitiesView],
+const TABS = [["project", "3D Σχέδια & μοντέλο", "3D Drawings & model", projectView], ["site", "Περιοχή – live δεδομένα", "Site – live data", siteView], ["model", "3D ψηφιακό δίδυμο / 4D", "3D digital twin / 4D", modelView], ["quantities", "Προμέτρηση", "Quantities", quantitiesView],
   ["schedule", "4D Χρόνος", "4D Time", scheduleView], ["cost", "5D Κόστος κατασκευής", "5D Construction cost", costView], ["lifecycle", "5D Κόστος στον χρόνο", "5D Cost over time", lifecycleView],
-  ["energy", "6D Ενέργεια & βιωσιμότητα", "6D Energy & sustainability", energyView], ["fm", "7D Διαχείριση εγκαταστάσεων", "7D Facility management", fmView], ["hazards", "7D Κίνδυνοι", "7D Risks", hazardsView],
+  ["energy", "6D Βιωσιμότητα (ενέργεια, άνθρακας)", "6D Sustainability (energy, carbon)", energyView], ["fm", "7D Διαχείριση εγκαταστάσεων", "7D Facility management", fmView], ["hazards", "7D Κίνδυνοι & ανθεκτικότητα", "7D Risk & resilience", hazardsView],
   ["prices", "Τιμές", "Prices", pricesView], ["report", "PDF", "PDF", reportView]];
 const $ = (id) => document.getElementById(id);
 let renderToken = 0;
