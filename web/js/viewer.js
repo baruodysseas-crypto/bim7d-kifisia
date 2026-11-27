@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
-export const KIND_COLORS = { footing: "#8d8d8d", slab: "#b9b9b9", column: "#9a9a9a", beam: "#a8a8a8", wall: "#e6dccb", window: "#7fb5d6", door: "#8a5a3c", roof: "#c8c0b4", stair: "#bdb3a2",
+export const KIND_COLORS = { footing: "#8d8d8d", slab: "#b9b9b9", column: "#9a9a9a", beam: "#a8a8a8", wall: "#e6dccb", window: "#7fb5d6", door: "#8a5a3c", roof: "#c8c0b4", stair: "#d4a24c",
   railing: "#9fd0e6", pergola: "#8b5e3c", fence: "#3b3b3b", vegetation: "#4f8f3a", furniture: "#a47c55", site: "#c9d6b0", other: "#c0c0c0" };
 // lower value = drawn in front where faces coincide (polygon offset)
 const DEPTH_PRI = { window: 0, door: 0, railing: 0.5, furniture: 0.5, pergola: 0.8, fence: 0.8, roof: 1, wall: 1.4, stair: 1.6, beam: 2.4, column: 2.6, slab: 2.8, footing: 3.2, site: 3.6, vegetation: 0.5, other: 2 };

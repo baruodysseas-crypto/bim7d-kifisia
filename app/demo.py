@@ -25,7 +25,7 @@ from shapely.ops import unary_union
 from . import fm, ingest, structural
 
 DATA = Path(__file__).parent / "data"
-DEMO_REV = 13
+DEMO_REV = 16
 
 # levels relative to the ground floor top (drawings: -2.00 / +1.00 / +4.05 / +7.10 / +10.30 / ridge +13.50)
 LEVELS = {"basement": -3.00, "ground": 0.0, "first": 3.05, "second": 6.10, "attic": 9.30, "roof": 12.50}
@@ -441,7 +441,14 @@ def build_parts(members: dict, windows: list[dict]) -> tuple[list[dict], dict]:
         add(f"Stair landing {st}", f"stair_{st}", land)
         add(f"Stair flight {st} B", f"stair_{st}", fb)
     x0, y0, x1, y1 = LIFT_SHAFT
-    add("Elevator car", "furniture_lift", _box_mesh(x0 + 0.08, y0 + 0.10, L["ground"] + 0.02, x1 - 0.08, y1 - 0.08, L["ground"] + 2.25), lift=True)
+    add("Elevator car", "furniture_lift", _box_mesh(x0 + 0.10, y0 + 0.12, L["basement"] + 0.02, x1 - 0.10, y1 - 0.10, L["basement"] + 2.30),
+        lift=True, color="#8e99a3")
+    xm = (x0 + x1) / 2
+    for st in STOREY_ORDER:
+        z = L[st]
+        if st == "attic" or z >= L["roof"]:
+            continue
+        add(f"Lift landing door {st}", "furniture_liftdoor", _box_mesh(xm - 0.45, y0 - 0.03, z, xm + 0.45, y0 + 0.03, z + 2.05), lift=True, color="#b7bfc6")
     # --- private stairs from the basement storerooms up to the ground-floor maisonettes Δ1 and Δ2 (A.01/A.02)
     for side, nm in ((1, "Δ1"), (-1, "Δ2")):
         add(f"Private stair {nm} basement–ground", "stair_basement", _private_stair(L["basement"], L["ground"], side))
@@ -455,53 +462,133 @@ FLIGHT_SPLIT = 8.34                 # axis between the up-flight (west half) and
 TREAD = 0.28
 LIFT_SHAFT = (9.65, 11.14, 11.06, 12.85)      # clear shaft inside the Π-shaped wall K15 (1.40 m wide), door on the stair side
 STAIR_HOLE = [(7.26, 10.34, 9.40, 12.83), (7.26, 9.78, 8.34, 10.34)]   # slab opening over the stair (the arrival strip stays)
-CA_TOP = 0.0                        # cours anglaises: walls and columns up to the garden
+CA_TOP = 0.10                       # cours anglaises: walls and columns 10–15 cm above the garden (Rhino garden ≈ −0.05)
 
 
-def _treads(boxes, z0, slab=0.18):
-    """Solid steps: each tread is a block from its top down by the waist depth (never under the floor it starts from)."""
-    return trimesh.util.concatenate([_box_mesh(x0, y0, max(z0, top - 0.20 - slab), x1, y1, top) for (x0, y0, x1, y1, top) in boxes])
+WAIST = 0.18                        # depth of the stair slab under the nosing line
 
 
-def _core_stair(z0: float, z1: float):
+def _tread_solid(pts, top, z0, h):
+    """One step: prism with the tread outline, from its top down to the underside of the stair slab (never below the floor)."""
+    return _convex_plate(pts, max(z0, top - h - WAIST), top)
+
+
+def _rect(x0, y0, x1, y1):
+    return [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]
+
+
+def _core_stair_steps(z0: float, z1: float):
+    """Common U-stair of the core (A.01/A.02): 8 steps up to the back wall, 2 at the back (half landing), 6 back towards the
+    entrance and the arrival on the floor – 17 risers. Returns [(outline, top)] for flight A, the landing and flight B."""
     n = 17
     h = (z1 - z0) / n
     xa, xm, xb = CORE_X[0], FLIGHT_SPLIT, CORE_X[1]
     ya, yt = CORE_Y[0], CORE_Y[0] + 8 * TREAD
-    up = [(xa, ya + k * TREAD, xm - 0.02, ya + (k + 1) * TREAD, z0 + (k + 1) * h) for k in range(8)]                 # steps 1–8 (north)
-    land = [(xa, yt, xm, CORE_Y[1], z0 + 9 * h), (xm, yt, xb, CORE_Y[1], z0 + 10 * h)]                                 # steps 9–10 at the back wall
-    down = [(xm + 0.02, yt - (k + 1) * TREAD, xb, yt - k * TREAD, z0 + (11 + k) * h) for k in range(6)]                # steps 11–16 (south)
-    return _treads(up, z0), _treads(land, z0), _treads(down, z0)
+    up = [(_rect(xa, ya + k * TREAD, xm, ya + (k + 1) * TREAD), z0 + (k + 1) * h) for k in range(8)]
+    land = [(_rect(xa, yt, xm, CORE_Y[1]), z0 + 9 * h), (_rect(xm, yt, xb, CORE_Y[1]), z0 + 10 * h)]
+    down = [(_rect(xm, yt - (k + 1) * TREAD, xb, yt - k * TREAD), z0 + (11 + k) * h) for k in range(6)]
+    return up, land, down, h
 
 
-def _private_stair_boxes(z0: float, z1: float, side: int):
-    """Stair Δ1 (side=1, west) or Δ2 (side=-1, mirrored): 8 steps eastwards along the back of the boiler room, three winders at the
-    central wall, 4 steps back westwards and the arrival on the ground floor – 17 risers."""
+def _core_stair(z0: float, z1: float):
+    up, land, down, h = _core_stair_steps(z0, z1)
+    mk = lambda st: trimesh.util.concatenate([_tread_solid(p, t, z0, h) for p, t in st])
+    return mk(up), mk(land), mk(down)
+
+
+PRIV_UP_Y, PRIV_DN_Y = (15.40, 16.40), (14.39, 15.30)          # rows of the private stair (west copy; the east one is mirrored)
+PRIV_PIVOT = (8.04, 15.35)                                      # centre of the winders
+PRIV_X = [6.075, 6.35, 6.62, 6.89, 7.16, 7.43, 7.70, 7.97]      # nosings of steps 1–8 (A.01)
+PRIV_XE = 9.05                                                  # outer side of the turn (0.20 m wall between Δ1 and Δ2)
+
+
+def _private_stair_steps(z0: float, z1: float, side: int):
+    """Stair Δ1 (side=1) / Δ2 (side=-1, mirrored), as drawn on A.01/A.02: steps 1–8 eastwards along the back of the boiler room,
+    winders 9–12 turning round the pivot at the central wall, steps 13–16 westwards above the boiler room and the arrival
+    (17) on the ground floor – 17 risers from the basement to the ground floor."""
     h = (z1 - z0) / 17
+    (ua, ub), (da, db) = PRIV_UP_Y, PRIV_DN_Y
+    px, py = PRIV_PIVOT
+    xe = PRIV_XE
+    steps = []
+    xs = PRIV_X + [8.36]
+    for k in range(8):                                             # 1–8 (step 8 widens to the start of the turn)
+        x_in = min(xs[k + 1], px) if k == 7 else xs[k + 1]
+        steps.append(([(xs[k], ua), (x_in, ua), (xs[k + 1], ub), (xs[k], ub)], k + 1))
+    yb = (15.95, py, 14.80)
+    steps += [([(px, py), (8.36, ub), (xe, ub), (xe, yb[0])], 9), ([(px, py), (xe, yb[0]), (xe, yb[1])], 10),
+              ([(px, py), (xe, yb[1]), (xe, yb[2])], 11), ([(px, py), (xe, yb[2]), (xe, da), (8.44, da)], 12),
+              ([(px, py), (8.44, da), (7.97, da), (7.97, db)], 13)]
+    for k, (a, b) in enumerate([(7.70, 7.97), (7.43, 7.70), (7.16, 7.43)]):   # 14–16
+        steps.append((_rect(a, da, b, db), 14 + k))
     X = (lambda x: x) if side == 1 else (lambda x: W - x)
-    up_y, dn_y = (15.40, 16.40), (14.39, 15.30)
-    xs, xw0, xw1, t = 6.075, 8.235, 9.05, 0.27
-    raw = [(xs + k * t, up_y[0], xs + (k + 1) * t, up_y[1], z0 + (k + 1) * h) for k in range(8)]
-    raw += [(xw0, 15.90, xw1, up_y[1], z0 + 9 * h), (xw0, up_y[0], xw1, 15.90, z0 + 10 * h),
-            (xw0, 14.85, xw1, up_y[0], z0 + 11 * h), (xw0, dn_y[0], xw1, 14.85, z0 + 12 * h)]
-    raw += [(xw0 - (k + 1) * t, dn_y[0], xw0 - k * t, dn_y[1], z0 + (13 + k) * h) for k in range(4)]
     out = []
-    for (a, b, c, d, top) in raw:
-        p, q = sorted((X(a), X(c)))
-        out.append((p, b, q, d, top))
-    return out
+    for pts, k in steps:
+        q = [(X(x), y) for x, y in pts]
+        if side == -1:
+            q = q[::-1]                                            # keep the outline counter-clockwise after mirroring
+        out.append((q, z0 + k * h))
+    return out, h
 
 
 def _private_stair(z0, z1, side):
-    return _treads(_private_stair_boxes(z0, z1, side), z0)
+    st, h = _private_stair_steps(z0, z1, side)
+    return trimesh.util.concatenate([_tread_solid(p, t, z0, h) for p, t in st])
 
 
 def _private_stair_holes():
     out = []
     for side in (1, -1):
-        for (x0, y0, x1, y1) in [(6.075, 15.30, 9.05, 16.40), (7.155, 14.39, 9.05, 15.30)]:
+        # A.02: steps 1–4 run under the ground floor (the slab stays, wall at x = 7.0–7.1 on it); open over 5–8, the winders and 13–16;
+        # the 10 cm wall between the two rows stands on the strip of slab left between them
+        for (x0, y0, x1, y1) in [(7.10, PRIV_UP_Y[0], PRIV_XE, PRIV_UP_Y[1]), (PRIV_PIVOT[0], PRIV_DN_Y[0], PRIV_XE, PRIV_UP_Y[0]),
+                                 (7.16, PRIV_DN_Y[0], PRIV_PIVOT[0], 15.30)]:
             p, q = (x0, x1) if side == 1 else (W - x1, W - x0)
             out.append((p, y0, q, y1))
+    return out
+
+
+def stair_undersides(st: str) -> list[tuple[float, float, float, float, float]]:
+    """Plan boxes of the steps that pass over storey `st`, with the level of their underside (walls below stop there)."""
+    L = LEVELS
+    out = []
+    i = STOREY_ORDER.index(st)
+    if i + 1 < len(STOREY_ORDER):
+        z0, z1 = L[st], L[STOREY_ORDER[i + 1]]
+        up, land, down, h = _core_stair_steps(z0, z1)
+        sets = [up + land + down]
+        if st == "basement":
+            sets += [_private_stair_steps(z0, z1, s)[0] for s in (1, -1)]
+        for steps in sets:
+            for pts, top in steps:
+                xs, ys = [p[0] for p in pts], [p[1] for p in pts]
+                out.append((min(xs), min(ys), max(xs), max(ys), max(z0, top - h - WAIST)))
+    return out
+
+
+def _wall_boxes_under_stairs(x0, y0, x1, y1, zb, zt, st):
+    """A partition (plan rectangle, from zb to zt) split where steps pass over it: there it stops under the stair."""
+    over = [u for u in stair_undersides(st) if u[0] < x1 - 1e-3 and u[2] > x0 + 1e-3 and u[1] < y1 - 1e-3 and u[3] > y0 + 1e-3]
+    if not over:
+        return [(x0, y0, x1, y1, zt)]
+    along_x = (x1 - x0) >= (y1 - y0)
+    a0, a1 = (x0, x1) if along_x else (y0, y1)
+    cuts = sorted({a0, a1, *[min(max(v, a0), a1) for u in over for v in ((u[0], u[2]) if along_x else (u[1], u[3]))]})
+    out = []
+    for a, b in zip(cuts[:-1], cuts[1:]):
+        if b - a < 1e-3:
+            continue
+        m = (a + b) / 2
+        cx, cy = (m, (y0 + y1) / 2) if along_x else ((x0 + x1) / 2, m)
+        top = min([zt] + [u[4] for u in over if u[0] <= cx <= u[2] and u[1] <= cy <= u[3]])
+        if top - zb < 0.05:
+            continue
+        box = (a, y0, b, y1, top) if along_x else (x0, a, x1, b, top)
+        if out and abs(out[-1][4] - top) < 1e-6 and abs((out[-1][2] if along_x else out[-1][3]) - a) < 1e-6:
+            pv = out[-1]
+            out[-1] = (pv[0], pv[1], b, pv[3], top) if along_x else (pv[0], pv[1], pv[2], b, top)
+        else:
+            out.append(box)
     return out
 
 
@@ -521,6 +608,7 @@ def _cours_anglaises(add, FR, z_floor: float) -> None:
     for (x0, y0, x1, y1) in CA_PITS:
         raft_ext.append(_box_mesh(x0, y0, z_floor - RAFT_T, x1, y1, z_floor))
         add("Cour anglaise floor", "foundation", raft_ext[-1], cour_anglaise=True)
+        add("Cour anglaise gravel", "land_site_gravel", _box_mesh(x0 + 0.12, y0 + 0.12, z_floor, x1 - 0.12, y1 - 0.12, z_floor + 0.08), color="#b9b3a7")
 
 
 CA_PITS = [(2.885, 20.35, 5.885, 21.745), (12.335, 20.35, 15.425, 21.745), (-1.385, 6.045, 0.0, 9.045)]
@@ -735,9 +823,40 @@ def _wall_assembly(a, b, poly, z0, wall_h, t, ops, placed, top_fn=None) -> dict[
     return {"wall": trimesh.util.concatenate(meshes), "lintels": lintels, "glazing": glazing}
 
 
+def _joined_partitions(st: str, rects: list, reach: float = 0.35) -> list[tuple[float, float, float, float]]:
+    """Partitions read from the plan stop a few cm short of the walls, columns and other partitions they meet (drawing joints).
+    Each free end is extended along the wall axis, up to `reach`, until it touches the next element, so that all walls join."""
+    from shapely.geometry import box as _b
+    foot = _poly(G[st])
+    t_ext = 0.25 if st == "basement" else 0.30
+    obst = [foot.difference(foot.buffer(-t_ext, join_style=2))]                     # inner band of the external walls
+    FR = _frame()
+    if FR and st in FR["levels"]:
+        obst += [_clean_poly(c["poly"]) for c in FR["levels"][st]["columns"]]
+    out = [tuple(r) for r in rects]
+    for i, (x0, y0, x1, y1) in enumerate(out):
+        others = unary_union(obst + [_b(*r) for j, r in enumerate(out) if j != i])
+        along_x = (x1 - x0) >= (y1 - y0)
+        for end in (0, 1):
+            step, d = 0.005, 0.0
+            while d < reach:
+                probe = (_b(x1 + d, y0 + 0.005, x1 + d + step, y1 - 0.005) if end else _b(x0 - d - step, y0 + 0.005, x0 - d, y1 - 0.005)) if along_x else \
+                        (_b(x0 + 0.005, y1 + d, x1 - 0.005, y1 + d + step) if end else _b(x0 + 0.005, y0 - d - step, x1 - 0.005, y0 - d))
+                if probe.intersects(others) and probe.intersection(others).area > 1e-7:
+                    break
+                d += step
+            if 0.0 < d < reach:
+                if along_x:
+                    x0, x1 = (x0, x1 + d) if end else (x0 - d, x1)
+                else:
+                    y0, y1 = (y0, y1 + d) if end else (y0 - d, y1)
+        out[i] = (round(x0, 4), round(y0, 4), round(x1, 4), round(y1, 4))
+    return out
+
+
 def _interior(add, st: str, z_floor: float, z_next: float, meta: dict) -> None:
     """Interior partitions of the floor plan (one element per storey) with their doors, lintels and the masonry above the doors."""
-    rects = OPENINGS["partitions"].get(st, [])
+    rects = _joined_partitions(st, OPENINGS["partitions"].get(st, []))
     doors = OPENINGS["doors"].get(st, [])
     if not rects and not doors:
         return
@@ -751,9 +870,10 @@ def _interior(add, st: str, z_floor: float, z_next: float, meta: dict) -> None:
         zt = top_at(x0, x1, (y0 + y1) / 2)
         if zt - z_floor < 0.3:
             continue
-        boxes.append(_box_mesh(x0, y0, z_floor, x1, y1, zt))
         ln_, t_ = max(x1 - x0, y1 - y0), min(x1 - x0, y1 - y0)
-        face += ln_ * (zt - z_floor)
+        for (a0, b0, a1, b1, top) in _wall_boxes_under_stairs(x0, y0, x1, y1, z_floor, zt, st):
+            boxes.append(_box_mesh(a0, b0, z_floor, a1, b1, top))
+            face += max(a1 - a0, b1 - b0) * (top - z_floor)
         length += ln_
         vol_t.append(t_)
     extra: list[tuple] = []
@@ -971,7 +1091,14 @@ def real_parts() -> list[dict]:
     out = []
     for i, it in enumerate(json.loads(str(d["index"]))):
         f = F[it["f0"]:it["f0"] + it["nf"]] - it["v0"]
-        m = trimesh.Trimesh(V[it["v0"]:it["v0"] + it["nv"]], f, process=False)
+        Vi = V[it["v0"]:it["v0"] + it["nv"]]
+        if it["kind"] == "site":                                   # the garden surface is open over the cours anglaises
+            c = Vi[f].mean(axis=1)
+            inside = np.zeros(len(f), bool)
+            for (x0, y0, x1, y1) in CA_PITS:
+                inside |= (c[:, 0] > x0) & (c[:, 0] < x1) & (c[:, 1] > y0) & (c[:, 1] < y1) & (c[:, 2] > LEVELS["basement"] + 0.5)
+            f = f[~inside]
+        m = trimesh.Trimesh(Vi, f, process=False)
         pr = {"color": it["color"], "source": "Rhino 3d.3dm", "rhino_layer": it["layer"], "rhino_material": it["material"], "landscape": "visual", "measure": "count"}
         if it["kind"] == "pergola" and it["layer"] != "khpos":
             pr.update(landscape="wood_cladding_m2", measure="half_area")        # timber planks of the facades: both faces of each plank in the mesh
@@ -1117,7 +1244,7 @@ def build_project(project_id: str = "demo-kifisia") -> tuple[dict[str, Any], dic
         parts += land
     layer_map = {"foundation": "footing", "retwall_basement": "wall", "excavation": "site"}
     for pt in parts:
-        for pre, kd in (("lintel_", "beam"), ("window_", "window"), ("door_", "door"), ("intwall_", "wall")):
+        for pre, kd in (("lintel_", "beam"), ("window_", "window"), ("door_", "door"), ("intwall_", "wall"), ("furniture_", "furniture")):
             if pt["layer"].startswith(pre):
                 layer_map[pt["layer"]] = kd
     for pt in parts:
