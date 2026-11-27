@@ -25,7 +25,7 @@ from shapely.ops import unary_union
 from . import fm, ingest, structural
 
 DATA = Path(__file__).parent / "data"
-DEMO_REV = 19
+DEMO_REV = 20
 
 # levels relative to the ground floor top (drawings: -2.00 / +1.00 / +4.05 / +7.10 / +10.30 / ridge +13.50)
 LEVELS = {"basement": -3.00, "ground": 0.0, "first": 3.05, "second": 6.10, "attic": 9.30, "roof": 12.50}
@@ -837,6 +837,18 @@ def _wall_assembly(a, b, poly, z0, wall_h, t, ops, placed, top_fn=None) -> dict[
     return {"wall": trimesh.util.concatenate(meshes), "lintels": lintels, "glazing": glazing}
 
 
+_PLAN_WALLS: dict[str, Any] = {}
+
+
+def _plan_walls(st: str):
+    """Wall rectangles of storey `st` read from the DXF of the plans (tools/import_plan_walls.py), or None."""
+    if "d" not in _PLAN_WALLS:
+        p = DATA / "plan_walls.json"
+        _PLAN_WALLS["d"] = json.loads(p.read_text(encoding="utf-8")) if p.exists() else {"storeys": {}}
+    s = _PLAN_WALLS["d"]["storeys"].get(st)
+    return s["walls"] if s else None
+
+
 def _joined_partitions(st: str, rects: list, reach: float = 0.35) -> list[tuple[float, float, float, float]]:
     """Partitions read from the plan stop a few cm short of the walls, columns and other partitions they meet (drawing joints).
     Each free end is extended along the wall axis, up to `reach`, until it touches the next element, so that all walls join."""
@@ -900,14 +912,17 @@ def _joined_partitions(st: str, rects: list, reach: float = 0.35) -> list[tuple[
 def _interior(add, st: str, z_floor: float, z_next: float, meta: dict) -> None:
     """Interior partitions of the floor plan (one element per storey) with their doors, lintels and the masonry above the doors."""
     rects = OPENINGS["partitions"].get(st, [])
-    if st == "basement":                       # A.01: under the dashed part of the private stairs the wall is interrupted (open to the boiler room)
-        rects = [r for r in rects if not (7.0 <= r[0] and r[2] <= 11.4 and 15.2 <= r[1] and r[3] <= 15.5)]
+    pw = _plan_walls(st)
+    if pw is not None:
+        # walls read from the DXF of the plans: the inner ones are partitions (brick); those on/outside the outline are the RC walls
+        inner = _poly(G[st]).buffer(-0.32, join_style=2)
+        rects = [tuple(r) for r in pw if inner.contains(Point((r[0] + r[2]) / 2, (r[1] + r[3]) / 2))]
     hanging = []
     if st == "basement":
-        hanging = [r for r in rects if abs(r[0] - 9.054) < 0.02 and abs(r[2] - 9.254) < 0.02 and r[1] > 15.3]   # 0.20 wall Δ1|Δ2
-        rects = [r for r in rects if r not in hanging] + [(8.304, 12.853, 9.404, 13.103)]                  # core back wall closed
+        hanging = [r for r in rects if abs(r[0] - 9.05) < 0.06 and abs(r[2] - 9.25) < 0.06 and r[1] > 15.2]   # 0.20 wall between Δ1 and Δ2
+        rects = [r for r in rects if r not in hanging]
     rects = _joined_partitions(st, rects)
-    doors = [d for d in OPENINGS["doors"].get(st, []) if not (st == "basement" and abs(d["mid"][1] - 12.81) < 0.05)]
+    doors = OPENINGS["doors"].get(st, [])
     if not rects and not doors:
         return
     top_flat = z_next - SLAB_T if st != "attic" else z_floor + 2.7

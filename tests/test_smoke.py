@@ -341,7 +341,7 @@ def test_openings_cut_into_walls_and_priced():
     els = p["elements"]
     by = collections.Counter((e["kind"], (e.get("props") or {}).get("opening")) for e in els)
     assert by[("window", "window")] == 33 and by[("window", "balcony_door")] == 17 and by[("window", "entrance")] == 3
-    assert by[("door", "garage_door")] == 1 and by[("door", "apartment_entrance")] == 5 and by[("door", "interior_door")] == 34   # boiler-room door of A.01 left out until its position is confirmed
+    assert by[("door", "garage_door")] == 1 and by[("door", "apartment_entrance")] == 5 and by[("door", "interior_door")] == 35
     lint = [e for e in els if (e.get("props") or {}).get("lintel")]
     assert len(lint) > 80 and all(e["kind"] == "beam" and e["qty"]["length_m"] > e["props"]["span_m"] for e in lint)      # bearing on both sides
     # every element lies on a real storey; walls are watertight bodies with the openings cut out
@@ -354,11 +354,11 @@ def test_openings_cut_into_walls_and_priced():
     q = quantities.compute(p)["quantities"]
     assert abs(q["masonry_external_m2"] - net) < 0.01                           # walls are already net: no second subtraction
     assert q["lintel_count"] == len(lint) and 140 < q["lintel_length_m"] < 200 and q["lintel_concrete_m3"] > 4
-    assert q["interior_doors"] == 34 and q["security_doors"] == 5 and q["garage_door_area_m2"] > 7 and q["masonry_internal_m2"] > 600
+    assert q["interior_doors"] == 35 and q["security_doors"] == 5 and q["garage_door_area_m2"] > 7 and q["masonry_internal_m2"] > 600
     c = cost.compute(p, q, store_prices())
     lines = {l["key"]: l for l in c["lines"]}
     assert lines["lintels"]["qty"] == round(q["lintel_length_m"], 2) and lines["lintels"]["total"] > 0
-    assert lines["interior_doors"]["qty"] == 34 and lines["door_frames"]["qty"] == 5 and lines["garage_door"]["total"] > 0
+    assert lines["interior_doors"]["qty"] == 35 and lines["door_frames"]["qty"] == 5 and lines["garage_door"]["total"] > 0
     # lintels are not counted twice in the structural concrete
     struct = sum(e["qty"].get("volume_m3", 0) for e in els if (e["kind"] in ("slab", "column", "beam", "roof", "stair") or (e["kind"] == "wall" and e["material"] == "concrete"))
                  and not (e.get("props") or {}).get("lintel"))
